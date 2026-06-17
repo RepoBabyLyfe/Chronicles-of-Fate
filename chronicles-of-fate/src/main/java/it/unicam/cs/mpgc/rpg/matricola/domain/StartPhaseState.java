@@ -7,8 +7,6 @@ public class StartPhaseState implements TurnState {
         System.out.println("[FASE DI INIZIO] L'eroe recupera Focus e si prepara.");
         // Ripristina, ad esempio, 3 Focus all'inizio di ogni turno
         context.getPlayer().restoreFocus(3);
-
-        // In automatico passiamo alla fase di azione
         context.nextPhase();
     }
 

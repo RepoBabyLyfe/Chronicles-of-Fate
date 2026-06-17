@@ -19,7 +19,6 @@ public class TieredDamageEffect implements CardEffect {
 
     @Override
     public void apply(Targetable target, RollResult roll) {
-        //cerca la fascia che contiene il risultato del dado e applica il danno
         tiers.stream()
                 .filter(tier -> tier.contains(roll.value()))
                 .findFirst()

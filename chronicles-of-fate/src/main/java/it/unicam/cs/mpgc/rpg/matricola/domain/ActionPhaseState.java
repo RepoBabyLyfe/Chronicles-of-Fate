@@ -19,6 +19,7 @@ public class ActionPhaseState implements TurnState {
 
         // 2. Risoluzione della giocata (Dado + Effetto)
         RollResult esitoDado = card.getRequiredDice().roll();
+        context.setLastDiceRoll(esitoDado.value());
         System.out.println("Giocata: [" + card.getName() + "] -> Dado: " + esitoDado.value());
 
         card.getEffect().apply(target, esitoDado);

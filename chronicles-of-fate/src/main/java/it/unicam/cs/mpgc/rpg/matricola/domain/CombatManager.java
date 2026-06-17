@@ -9,6 +9,7 @@ public class CombatManager {
     private final Character player;
     private final Character enemy;
     private TurnState currentState;
+    private int lastDiceRoll = 0;
 
     public CombatManager(Character player, Character enemy) {
         if (player == null || enemy == null) {
@@ -44,6 +45,14 @@ public class CombatManager {
     public void nextPhase() {
         if (currentState == null) throw new IllegalStateException("Combattimento non avviato.");
         currentState.nextPhase(this);
+    }
+
+    public void setLastDiceRoll(int roll) {
+        this.lastDiceRoll = roll;
+    }
+
+    public int getLastDiceRoll() {
+        return lastDiceRoll;
     }
 
     // --- Getters ---
