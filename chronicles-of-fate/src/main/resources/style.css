@@ -1,130 +1,150 @@
-/* --- Sfondo Principale--- */
+/* --- REGISTRO PRINCIPALE TRASPARENTE --- */
 .root {
-    -fx-background-color: linear-gradient(to bottom, #0a0a0c, #1f1433);
-    -fx-font-family: "Courier New", Consolas, monospace; /* Font stile terminale/PS2 */
+    -fx-background-color: #030305; /* Sfondo scuro di sicurezza prima del caricamento della GPU */
+    -fx-font-family: 'Segoe UI', 'Roboto', sans-serif;
 }
 
-/* --- Pannelli --- */
+/* --- PANNELLI IN VETRO NEURALE --- */
 .ps2-panel {
-    -fx-background-color: rgba(10, 5, 20, 0.8);
-    -fx-border-color: #39ff14; /* Verde tossico/neon */
-    -fx-border-width: 2;
-    -fx-border-style: solid;
-    -fx-padding: 20px;
-    /* Leggero alone verde intorno ai pannelli */
-    -fx-effect: dropshadow(three-pass-box, rgba(57, 255, 20, 0.15), 20, 0, 0, 0);
+    -fx-background-color: rgba(20, 10, 42, 0.65);
+    -fx-border-color: rgba(180, 50, 255, 0.4);
+    -fx-border-width: 1.5;
+    -fx-border-radius: 15;
+    -fx-background-radius: 15;
+    -fx-padding: 25px;
+    -fx-effect: dropshadow(gaussian, rgba(180, 50, 255, 0.25), 30, 0, 0, 0);
 }
 
-/* --- Bottoni di Gioco--- */
+.menu-box { -fx-padding: 40px; }
+.top-arena-margin { -fx-margin: 20px 20px 0px 20px; }
+.bottom-arena-margin { -fx-margin: 0px 20px 20px 20px; }
+
+/* --- INTERFACCIA DI INPUT (Ciano Neon) --- */
 .ps2-button {
-    -fx-background-color: #000000;
-    -fx-border-color: #39ff14;
-    -fx-border-width: 2;
-    -fx-text-fill: #39ff14;
+    -fx-background-color: rgba(0, 229, 255, 0.05);
+    -fx-border-color: #00e5ff;
+    -fx-border-width: 1;
+    -fx-text-fill: #00e5ff;
     -fx-font-weight: bold;
-    -fx-font-size: 16px;
-    -fx-padding: 10 25;
+    -fx-font-size: 15px;
+    -fx-padding: 12 30;
     -fx-cursor: hand;
-    -fx-background-radius: 0; /* Zero curve, low-poly style */
-    -fx-border-radius: 0;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
 }
 
-/* Effetto Hover*/
 .ps2-button:hover {
-    -fx-background-color: #39ff14;
-    -fx-text-fill: #000000;
+    -fx-background-color: rgba(0, 229, 255, 0.2);
+    -fx-effect: dropshadow(gaussian, rgba(0, 229, 255, 0.6), 15, 0, 0, 0);
 }
 
-.ps2-button:pressed {
-    -fx-translate-y: 2;
-}
+.ps2-button:pressed { -fx-translate-y: 2; }
 
-/* --- Bottoni di Sistema--- */
 .system-button {
-    -fx-background-color: #1a1a1a;
-    -fx-border-color: #555555;
-    -fx-text-fill: #aaaaaa;
-    -fx-background-radius: 0;
-    -fx-border-radius: 0;
-    -fx-padding: 5 15;
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(180, 50, 255, 0.3);
+    -fx-text-fill: #d0a1ff;
+    -fx-background-radius: 15;
+    -fx-border-radius: 15;
+    -fx-padding: 6 18;
     -fx-cursor: hand;
 }
 
 .system-button:hover {
-    -fx-border-color: #aaaaaa;
+    -fx-border-color: #b432ff;
     -fx-text-fill: #ffffff;
+    -fx-background-color: rgba(180, 50, 255, 0.1);
 }
 
-/* --- LE CARTE--- */
+/* --- MANO DI CARTE --- */
 .card-container {
-    -fx-background-color: linear-gradient(to bottom, #2b2b2b 0%, #111111 100%);
-    -fx-border-color: #444444;
-    -fx-border-width: 3;
-    -fx-padding: 10;
-    -fx-pref-width: 130;
-    -fx-pref-height: 180;
+    -fx-background-color: rgba(10, 10, 25, 0.82);
+    -fx-border-color: rgba(0, 229, 255, 0.3);
+    -fx-border-width: 1;
+    -fx-padding: 12;
+    -fx-pref-width: 135;
+    -fx-pref-height: 190;
     -fx-cursor: hand;
     -fx-alignment: top-center;
-    -fx-background-radius: 0;
-    -fx-border-radius: 0;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
 }
 
-/* Hover Carta: Si alza e il bordo si illumina quando ci passi sopra col mouse */
 .card-container:hover {
-    -fx-translate-y: -15;
-    -fx-border-color: #39ff14;
-    -fx-effect: dropshadow(two-pass-box, #39ff14, 15, 0, 0, 0);
+    -fx-translate-y: -12;
+    -fx-border-color: #00e5ff;
+    -fx-background-color: rgba(15, 25, 45, 0.95);
+    -fx-effect: dropshadow(gaussian, rgba(0, 229, 255, 0.55), 20, 0, 0, 0);
 }
 
 .card-cost {
-    -fx-background-color: #000000;
-    -fx-text-fill: #00ffff; /* Ciano per la magia/focus */
-    -fx-border-color: #00ffff;
+    -fx-background-color: rgba(0, 0, 0, 0.65);
+    -fx-text-fill: #b432ff;
+    -fx-border-color: #b432ff;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
     -fx-border-width: 1;
     -fx-font-weight: bold;
     -fx-padding: 4 8;
-    -fx-font-size: 14px;
-    -fx-background-radius: 0;
+    -fx-font-size: 13px;
 }
 
 .card-title {
-    -fx-font-size: 15px;
+    -fx-font-size: 14px;
     -fx-font-weight: bold;
-    -fx-text-fill: #cccccc;
+    -fx-text-fill: #e0e0e0;
     -fx-wrap-text: true;
     -fx-alignment: center;
     -fx-text-alignment: center;
 }
 
-/* --- BARRE DELL'AURA--- */
+/* --- MONITORAGGIO ENERGETICO (Barre LED) --- */
 .hp-bar {
-    -fx-control-inner-background: #000000;
-    -fx-background-radius: 0;
-    -fx-border-radius: 0;
-    -fx-border-color: #555555;
-    -fx-border-width: 2;
+    -fx-control-inner-background: rgba(0, 0, 0, 0.6);
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: rgba(255, 255, 255, 0.08);
+    -fx-border-width: 1;
 }
 
 .hp-bar .bar {
-    -fx-background-color: #39ff14; /* Eroe: Verde Tossico */
-    -fx-background-radius: 0;
-    -fx-padding: 6px;
+    -fx-background-color: linear-gradient(to right, #0055ff, #00e5ff);
+    -fx-background-radius: 8;
+    -fx-padding: 8px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 229, 255, 0.5), 10, 0, 0, 0);
 }
 
 .hp-bar-enemy .bar {
-    -fx-background-color: #8b0000; /* Boss: Rosso Sangue Scuro */
-    -fx-background-radius: 0;
+    -fx-background-color: linear-gradient(to right, #8800ff, #ff0055);
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(255, 0, 85, 0.5), 10, 0, 0, 0);
 }
 
+/* --- FORMATTAZIONE SCRITTE AL NEON --- */
 .title-text {
-    -fx-font-size: 52px;
+    -fx-font-size: 46px;
     -fx-font-weight: bold;
-    -fx-text-fill: #39ff14;
-    -fx-effect: dropshadow(two-pass-box, #000000, 10, 0, 5, 5);
+    -fx-text-fill: linear-gradient(to right, #00e5ff, #b432ff);
+    -fx-effect: dropshadow(gaussian, rgba(180, 50, 255, 0.4), 15, 0, 0, 0);
 }
 
 .boss-name {
-    -fx-font-size: 28px;
+    -fx-font-size: 24px;
     -fx-font-weight: bold;
-    -fx-text-fill: #ff3333; /* Rosso acceso per il boss */
+    -fx-text-fill: #ff0055;
+    -fx-effect: dropshadow(gaussian, rgba(255, 0, 85, 0.35), 10, 0, 0, 0);
+}
+
+.boss-hp-text { -fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #ff0055; }
+.player-hp-text { -fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #00e5ff; }
+.player-focus-text { -fx-font-size: 19px; -fx-font-weight: bold; -fx-text-fill: #b432ff; }
+.log-display { -fx-font-size: 15px; -fx-min-width: 550; -fx-alignment: center; -fx-text-fill: #00e5ff; }
+
+/* --- INCOGNITA ATTACCO (Dice Overlay) --- */
+.dice-screen-overlay { -fx-background-color: rgba(5, 5, 10, 0.88); }
+.dice-overlay-title { -fx-text-fill: #b432ff; -fx-font-size: 22px; -fx-font-weight: bold; -fx-letter-spacing: 2px; }
+.dice-live-value {
+    -fx-text-fill: linear-gradient(to bottom, #ffffff, #e0b3ff);
+    -fx-font-size: 160px;
+    -fx-effect: dropshadow(gaussian, rgba(180, 50, 255, 0.85), 40, 0, 0, 0);
 }
