@@ -5,12 +5,16 @@ public class EndPhaseState implements TurnState {
     @Override
     public void onEnter(CombatManager context) {
         System.out.println("[FASE DI FINE] Il turno dell'Eroe si conclude.");
-        // Qui in futuro si scarteranno le carte rimaste in mano
 
-        // Passaggio logico del turno al nemico (Simulato per ora)
-        System.out.println("--- TURNO DEL NEMICO (IA in sviluppo) ---");
+        // AI del nemico
+        // Se entrambi sono ancora vivi, il Boss sferra il suo attacco
+        if (context.getEnemy().isAlive() && context.getPlayer().isAlive()) {
+            System.out.println("--- TURNO DEL NEMICO ---");
+            //TODO: Per ora gli facciamo fare un attacco fisso da 5 danni, da modificare in seguito
+            context.getPlayer().takeDamage(5);
+        }
 
-        // Dopo il turno del nemico, si ricomincia
+        // Finito il turno del nemico, passiamo alla fase successiva (nuovo inizio)
         context.nextPhase();
     }
 
@@ -22,7 +26,6 @@ public class EndPhaseState implements TurnState {
 
     @Override
     public void nextPhase(CombatManager context) {
-        System.out.println("Ritorno alla Fase di Inizio...\n");
         context.setState(new StartPhaseState());
     }
 }
