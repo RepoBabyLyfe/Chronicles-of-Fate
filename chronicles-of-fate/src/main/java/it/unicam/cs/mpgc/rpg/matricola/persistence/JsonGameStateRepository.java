@@ -36,7 +36,6 @@ public class JsonGameStateRepository implements GameStateRepository {
 
         String json = Files.readString(filePath);
 
-        // Estrazione manuale dei valori (Zero dipendenze esterne richieste)
         int playerHp = extractInt(json, "playerHp");
         int playerFocus = extractInt(json, "playerFocus");
         int enemyHp = extractInt(json, "enemyHp");
@@ -50,7 +49,6 @@ public class JsonGameStateRepository implements GameStateRepository {
         return Files.exists(filePath);
     }
 
-    // Metodo helper per parsare il JSON grezzo
     private int extractInt(String json, String key) {
         String searchKey = "\"" + key + "\":";
         int index = json.indexOf(searchKey);
