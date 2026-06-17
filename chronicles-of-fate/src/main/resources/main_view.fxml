@@ -1,15 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
 
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
+<StackPane stylesheets="@style.css" prefWidth="900" prefHeight="700" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicam.cs.mpgc.rpg.matricola.presentation.MainController">
 
-<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicam.cs.mpgc.rpg.matricola.presentation.MainController">
+    <VBox fx:id="mainMenuPane" alignment="CENTER" spacing="50" styleClass="root">
 
-    <Label text="Chronicles of Fate" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+        <Label text="CHRONICLES OF FATE" styleClass="title-text"/>
 
-    <Button text="Avvia Nuova Partita" onAction="#onStartGameClicked"/>
+        <VBox alignment="CENTER" spacing="20" maxWidth="350" styleClass="ps2-panel" style="-fx-padding: 40px;">
+            <Button text="[ NUOVA PARTITA ]" onAction="#onStartGameClicked" styleClass="ps2-button" maxWidth="Infinity"/>
+            <Button text="[ CARICA PARTITA ]" onAction="#onLoadGameFromMenuClicked" styleClass="ps2-button" maxWidth="Infinity"/>
+            <Button text="[ ESCI ]" onAction="#onExitClicked" styleClass="system-button" maxWidth="Infinity"/>
+        </VBox>
+    </VBox>
 
-    <Label fx:id="statusLabel" text="In attesa..."/>
 
-</VBox>
+    <BorderPane fx:id="combatPane" visible="false" styleClass="root">
+
+        <top>
+            <VBox alignment="CENTER" spacing="10" styleClass="ps2-panel" BorderPane.alignment="CENTER">
+                <BorderPane.margin><Insets top="20" right="20" left="20" bottom="0"/></BorderPane.margin>
+                <Label text="Avatar dell'Entropia" styleClass="boss-name"/>
+                <ProgressBar fx:id="enemyHpBar" progress="1.0" prefWidth="400" styleClass="hp-bar, hp-bar-enemy"/>
+                <Label fx:id="enemyHpLabel" text="AURA Boss: 50/50" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #aaaaaa;"/>
+            </VBox>
+        </top>
+
+        <center>
+            <VBox alignment="CENTER">
+                <Label fx:id="systemLogLabel" text="Preparazione arena..." styleClass="ps2-panel" style="-fx-font-size: 16px; -fx-min-width: 550; -fx-alignment: center; -fx-text-fill: #39ff14;"/>
+            </VBox>
+        </center>
+
+        <bottom>
+            <VBox spacing="20" styleClass="ps2-panel" BorderPane.alignment="CENTER">
+                <BorderPane.margin><Insets top="0" right="20" left="20" bottom="20"/></BorderPane.margin>
+
+                <HBox alignment="CENTER" spacing="50">
+                    <VBox alignment="CENTER" spacing="5">
+                        <Label fx:id="playerHpLabel" text="AURA Eroe: 30/30" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #39ff14;"/>
+                        <ProgressBar fx:id="playerHpBar" progress="1.0" prefWidth="250" styleClass="hp-bar"/>
+                    </VBox>
+                    <Label fx:id="playerFocusLabel" text="Focus: 5" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #00ffff;"/>
+                </HBox>
+
+                <HBox fx:id="handContainer" alignment="CENTER" spacing="15" minHeight="200"/>
+
+                <HBox alignment="CENTER" spacing="30">
+                    <Button text="&gt; PASSA TURNO &lt;" onAction="#onNextPhaseClicked" styleClass="ps2-button"/>
+                </HBox>
+
+                <HBox alignment="CENTER" spacing="15">
+                    <Button text="Riavvia Scontro" onAction="#onRestartClicked" styleClass="system-button"/>
+                    <Button text="Salva Partita" onAction="#onSaveClicked" styleClass="system-button"/>
+                    <Button text="Torna al Menù" onAction="#onBackToMenuClicked" styleClass="system-button"/>
+                </HBox>
+            </VBox>
+        </bottom>
+    </BorderPane>
+
+</StackPane>
