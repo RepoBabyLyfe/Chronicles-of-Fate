@@ -17,12 +17,20 @@ public class ActionPhaseState implements TurnState {
             return false;
         }
 
-        // 2. Risoluzione della giocata (Dado + Effetto)
-        RollResult esitoDado = card.getRequiredDice().roll();
-        context.setLastDiceRoll(esitoDado.value());
-        System.out.println("Giocata: [" + card.getName() + "] -> Dado: " + esitoDado.value());
+        // 2. Risoluzione (Dado opzionale)
+        RollResult esitoDado = null;
 
-        card.getEffect().apply(target, esitoDado);
+        if (card.requiresDice()) {
+            esitoDado = card.getRequiredDice().roll();
+            context.setLastDiceRoll(esitoDado.value());
+            System.out.println("Giocata: [" + card.getName() + "] -> Dado: " + esitoDado.value());
+        } else {
+            context.setLastDiceRoll(0); // Flag per indicare assenza di lancio
+            System.out.println("Giocata: [" + card.getName() + "] -> Effetto Istantaneo!");
+        }
+
+        // RIGA CORRETTA: Passiamo player (sorgente), target (bersaglio) ed esitoDado
+        card.getEffect().apply(player, target, esitoDado);
         return true;
     }
 

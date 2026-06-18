@@ -1,26 +1,36 @@
 package it.unicam.cs.mpgc.rpg.matricola.domain;
 
+import it.unicam.cs.mpgc.rpg.matricola.application.events.LogEvent;
+import it.unicam.cs.mpgc.rpg.matricola.application.events.DamageTakenEvent;
+
 public class EndPhaseState implements TurnState {
 
     @Override
     public void onEnter(CombatManager context) {
         System.out.println("[FASE DI FINE] Il turno dell'Eroe si conclude.");
 
-        // AI del nemico
-        // Se entrambi sono ancora vivi, il Boss sferra il suo attacco
         if (context.getEnemy().isAlive() && context.getPlayer().isAlive()) {
-            System.out.println("--- TURNO DEL NEMICO ---");
-            //TODO: Per ora gli facciamo fare un attacco fisso da 5 danni, da modificare in seguito
-            context.getPlayer().takeDamage(5);
+            System.out.println("--- TURNO DELL'AVATAR ALIENOCENTRICO ---");
+
+            int hpPrima = context.getPlayer().getCurrentHp();
+            String actionLog = context.getEnemyAI().takeTurn(context.getEnemy(), context.getPlayer());
+            context.setLastEnemyAction(actionLog);
+
+            int dannoFatto = hpPrima - context.getPlayer().getCurrentHp();
+
+            // IL DOMINIO COMUNICA CON LA UI TRAMITE EVENTI!
+            context.publishEvent(new LogEvent("👽 " + actionLog));
+            if (dannoFatto > 0) {
+                context.publishEvent(new DamageTakenEvent(context.getPlayer(), dannoFatto, false));
+            }
         }
 
-        // Finito il turno del nemico, passiamo alla fase successiva (nuovo inizio)
         context.nextPhase();
     }
 
     @Override
     public boolean playCard(CombatManager context, Card card, Targetable target) {
-        System.out.println("Azione negata: Il turno sta finendo.");
+        System.out.println("Non puoi giocare carte nella fase finale.");
         return false;
     }
 

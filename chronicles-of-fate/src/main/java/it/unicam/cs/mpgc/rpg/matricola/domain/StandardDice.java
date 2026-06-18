@@ -26,7 +26,6 @@ public class StandardDice implements Rollable {
 
     @Override
     public RollResult roll() {
-        //NOTA PER DAVE: nextInt(facce) genera da 0 a faces-1, ho aggiunto 1 per avere da 1 a facce.
         int result = random.nextInt(facce) + 1;
         return new RollResult(result);
     }
