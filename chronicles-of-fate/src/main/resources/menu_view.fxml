@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.canvas.Canvas?>
+<StackPane fx:id="rootPane" stylesheets="@style.css" prefWidth="1000" prefHeight="750" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicam.cs.mpgc.rpg.matricola.presentation.MenuController">
+
+    <Canvas fx:id="spaceCanvas" mouseTransparent="true" StackPane.alignment="CENTER"/>
+
+    <VBox alignment="CENTER" spacing="50">
+        <Label text="CHRONICLES OF FATE" styleClass="title-text"/>
+
+        <VBox alignment="CENTER" spacing="20" maxWidth="350" styleClass="ps2-panel, menu-box">
+            <Button text="[ NUOVA PARTITA ]" onAction="#onStartGameClicked" styleClass="ps2-button" maxWidth="Infinity"/>
+            <Button text="[ CARICA PARTITA ]" onAction="#onLoadGameClicked" styleClass="ps2-button" maxWidth="Infinity"/>
+            <Button text="[ ESCI ]" onAction="#onExitClicked" styleClass="system-button" maxWidth="Infinity"/>
+        </VBox>
+    </VBox>
+</StackPane>

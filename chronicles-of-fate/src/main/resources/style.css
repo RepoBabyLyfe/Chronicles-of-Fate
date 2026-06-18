@@ -56,46 +56,46 @@
     -fx-background-color: rgba(180, 50, 255, 0.1);
 }
 
-/* --- MANO DI CARTE --- */
+/* --- MANO DI CARTE (DIMENSIONE OTTIMALE: 280x400) --- */
 .card-container {
-    -fx-background-color: rgba(10, 10, 25, 0.82);
-    -fx-border-color: rgba(0, 229, 255, 0.3);
-    -fx-border-width: 1;
-    -fx-padding: 12;
-    -fx-pref-width: 135;
-    -fx-pref-height: 190;
+    -fx-background-color: rgba(10, 10, 25, 0.85);
+    -fx-border-color: rgba(0, 229, 255, 0.6);
+    -fx-border-width: 2;
+    -fx-pref-width: 280;
+    -fx-pref-height: 400;
     -fx-cursor: hand;
     -fx-alignment: top-center;
-    -fx-background-radius: 12;
-    -fx-border-radius: 12;
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
 }
 
 .card-container:hover {
-    -fx-translate-y: -12;
+    -fx-translate-y: -20;
     -fx-border-color: #00e5ff;
-    -fx-background-color: rgba(15, 25, 45, 0.95);
-    -fx-effect: dropshadow(gaussian, rgba(0, 229, 255, 0.55), 20, 0, 0, 0);
+    -fx-background-color: rgba(15, 25, 45, 0.98);
+    -fx-effect: dropshadow(gaussian, rgba(0, 229, 255, 0.75), 35, 0, 0, 0);
 }
 
 .card-cost {
-    -fx-background-color: rgba(0, 0, 0, 0.65);
+    -fx-background-color: rgba(0, 0, 0, 0.9);
     -fx-text-fill: #b432ff;
     -fx-border-color: #b432ff;
-    -fx-border-radius: 8;
-    -fx-background-radius: 8;
-    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-border-width: 1.5;
     -fx-font-weight: bold;
-    -fx-padding: 4 8;
-    -fx-font-size: 13px;
+    -fx-padding: 8 16;
+    -fx-font-size: 18px;
 }
 
 .card-title {
-    -fx-font-size: 14px;
+    -fx-font-size: 20px;
     -fx-font-weight: bold;
-    -fx-text-fill: #e0e0e0;
+    -fx-text-fill: #ffffff;
     -fx-wrap-text: true;
     -fx-alignment: center;
     -fx-text-alignment: center;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.95), 8, 0, 0, 0);
 }
 
 /* --- MONITORAGGIO ENERGETICO (Barre LED) --- */
@@ -147,4 +147,28 @@
     -fx-text-fill: linear-gradient(to bottom, #ffffff, #e0b3ff);
     -fx-font-size: 160px;
     -fx-effect: dropshadow(gaussian, rgba(180, 50, 255, 0.85), 40, 0, 0, 0);
+}
+
+/* --- STORICO DI COMBATTIMENTO --- */
+.history-log {
+    -fx-control-inner-background: rgba(5, 5, 15, 0.8); /* Sfondo scurissimo */
+    -fx-text-fill: #a0a0b0; /* Testo grigio/azzurrino tenue */
+    -fx-font-size: 13px;
+    -fx-font-family: 'Segoe UI', 'Roboto', sans-serif;
+    -fx-background-color: transparent;
+}
+
+/* Nasconde il bordo bianco standard della TextArea */
+.history-log .content {
+    -fx-background-color: transparent;
+}
+
+/* Stile della barra di scorrimento (Scrollbar) a tema neon */
+.history-log .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 8px;
+}
+.history-log .scroll-bar:vertical .thumb {
+    -fx-background-color: rgba(180, 50, 255, 0.5); /* Viola fluo */
+    -fx-background-radius: 4px;
 }
