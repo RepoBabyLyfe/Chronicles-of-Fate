@@ -10,7 +10,7 @@ import java.util.random.RandomGenerator;
 public class GameFactory {
 
     public static Character createPlayer() {
-        return new Character("Tessitore di Fati", 30, 5) {};
+        return new Character("Tessitore di Fati", 30, 10) {};
     }
 
     public static Character createEnemy() {
@@ -18,21 +18,45 @@ public class GameFactory {
     }
 
     public static Deck createStartingDeck() {
-        Rollable d6 = new StandardDice(6, RandomGenerator.getDefault());
+        Rollable d6 = new StandardDice(6, java.util.random.RandomGenerator.getDefault());
 
-        CardEffect effettoInstabile = new TieredDamageEffect(List.of(
-                new DamageTier(1, 2, 2), new DamageTier(3, 5, 6), new DamageTier(6, 6, 12)
-        ));
-        Card colpoInstabile = new Card("Colpo Instabile", 1, d6, effettoInstabile);
+        // 1. Risonanza Eterea (Con immagine personalizzata passata come 5° parametro!)
+        // 1. Risonanza Eterea (Attenzione al .jpg finale!)
+        Card risonanza = new Card("Risonanza Eterea", 1, d6, (source, target, roll) -> {
+            source.restoreFocus(roll.value());
+        }, "/images/risonanza_eterea.png");
 
-        CardEffect effettoLieve = new TieredDamageEffect(List.of(
-                new DamageTier(1, 6, 4)
-        ));
-        Card colpoSicuro = new Card("Colpo Sicuro", 2, d6, effettoLieve);
+        // 2. Fenditura Quantica (Attacco Standard: Danno base + dado)
+        Card fenditura = new Card("Fenditura Quantica", 2, d6, (source, target, roll) -> {
+            target.takeDamage(3 + roll.value());
+        }, "/images/fenditura_quantica.png");
 
-        List<Card> initialCards = new ArrayList<>();
-        for(int i = 0; i < 7; i++) initialCards.add(colpoInstabile);
-        for(int i = 0; i < 3; i++) initialCards.add(colpoSicuro);
+        // 3. Sovraccarico Biologico (Rischio estremo: danni doppi ma ferisce l'eroe)
+        Card sovraccarico = new Card("Sovraccarico Biologico", 4, d6, (source, target, roll) -> {
+            target.takeDamage(roll.value() * 2);
+            source.takeDamage(2); // Rinculo!
+        }, "/images/sovraccarico_biologico.png");
+
+        // 4. Innesto Simbiotico (Sopravvivenza: cura l'eroe)
+        Card innesto = new Card("Innesto Simbiotico", 3, d6, (source, target, roll) -> {
+            source.heal(roll.value() + 1);
+        }, "/images/innesto_simbiotico.png");
+
+        // 5. Assimilazione Oscura (Sacrificio: scambia Vita per Focus, il dado viene ignorato)
+        Card assimilazione = new Card("Assimilazione Oscura", 0, null, (source, target, roll) -> {
+            source.takeDamage(3);
+            source.restoreFocus(4);
+        }, "/images/assimilazione_oscura.png");
+
+        // Assembliamo il mazzo iniziale (inseriamo 2 copie per ciascuna carta per arrivare a 10 carte totali)
+        List<Card> initialCards = new java.util.ArrayList<>();
+        for(int i = 0; i < 2; i++) {
+            initialCards.add(risonanza);
+            initialCards.add(fenditura);
+            initialCards.add(sovraccarico);
+            initialCards.add(innesto);
+            initialCards.add(assimilazione);
+        }
 
         return new Deck(initialCards);
     }
