@@ -2,40 +2,34 @@ package it.unicam.cs.mpgc.rpg.matricola.domain;
 
 import it.unicam.cs.mpgc.rpg.matricola.application.events.LogEvent;
 import it.unicam.cs.mpgc.rpg.matricola.application.events.DamageTakenEvent;
+import it.unicam.cs.mpgc.rpg.matricola.application.events.EnemyCardPlayedEvent;
 
 public class EndPhaseState implements TurnState {
 
     @Override
     public void onEnter(CombatManager context) {
-        System.out.println("[FASE DI FINE] Il turno dell'Eroe si conclude.");
-
         if (context.getEnemy().isAlive() && context.getPlayer().isAlive()) {
-            System.out.println("--- TURNO DELL'AVATAR ALIENOCENTRICO ---");
-
             int hpPrima = context.getPlayer().getCurrentHp();
-            String actionLog = context.getEnemyAI().takeTurn(context.getEnemy(), context.getPlayer());
-            context.setLastEnemyAction(actionLog);
+
+            // Il dominio elabora la logica e restituisce l'oggetto strutturato
+            BossMove move = context.getEnemyAI().takeTurn(context.getEnemy(), context.getPlayer());
+            context.setLastEnemyAction(move.logMessage());
 
             int dannoFatto = hpPrima - context.getPlayer().getCurrentHp();
 
-            // IL DOMINIO COMUNICA CON LA UI TRAMITE EVENTI!
-            context.publishEvent(new LogEvent("👽 " + actionLog));
+            // Sganciamo gli eventi verso la UI (Disaccoppiamento OCP)
+            context.publishEvent(new EnemyCardPlayedEvent(move.name(), move.logMessage(), move.imagePath()));
+            context.publishEvent(new LogEvent("👽 " + move.logMessage()));
+
             if (dannoFatto > 0) {
                 context.publishEvent(new DamageTakenEvent(context.getPlayer(), dannoFatto, false));
             }
         }
-
         context.nextPhase();
     }
 
     @Override
-    public boolean playCard(CombatManager context, Card card, Targetable target) {
-        System.out.println("Non puoi giocare carte nella fase finale.");
-        return false;
-    }
-
+    public boolean playCard(CombatManager context, Card card, Targetable target) { return false; }
     @Override
-    public void nextPhase(CombatManager context) {
-        context.setState(new StartPhaseState());
-    }
+    public void nextPhase(CombatManager context) { context.setState(new StartPhaseState()); }
 }
