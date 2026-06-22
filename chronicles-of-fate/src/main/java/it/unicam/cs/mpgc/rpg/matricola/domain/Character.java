@@ -4,7 +4,7 @@ package it.unicam.cs.mpgc.rpg.matricola.domain;
  * Entità base che rappresenta un personaggio nel gioco (Eroe o Mostro).
  * Incapsula in modo sicuro la gestione dei Punti Salute (HP) e del Focus (Mana).
  */
-public abstract class Character implements Targetable {
+public class Character implements Targetable {
 
     private final String name;
     private final int maxHp;

@@ -11,15 +11,13 @@ public class EndPhaseState implements TurnState {
         if (context.getEnemy().isAlive() && context.getPlayer().isAlive()) {
             int hpPrima = context.getPlayer().getCurrentHp();
 
-            // Il dominio elabora la logica e restituisce l'oggetto strutturato
-            BossMove move = context.getEnemyAI().takeTurn(context.getEnemy(), context.getPlayer());
+            BossMove move = context.getBossAI().takeTurn(context.getEnemy(), context.getPlayer());
             context.setLastEnemyAction(move.logMessage());
 
             int dannoFatto = hpPrima - context.getPlayer().getCurrentHp();
 
-            // Sganciamo gli eventi verso la UI (Disaccoppiamento OCP)
             context.publishEvent(new EnemyCardPlayedEvent(move.name(), move.logMessage(), move.imagePath()));
-            context.publishEvent(new LogEvent("👽 " + move.logMessage()));
+            context.publishEvent(new LogEvent("[BOSS] " + move.logMessage()));
 
             if (dannoFatto > 0) {
                 context.publishEvent(new DamageTakenEvent(context.getPlayer(), dannoFatto, false));

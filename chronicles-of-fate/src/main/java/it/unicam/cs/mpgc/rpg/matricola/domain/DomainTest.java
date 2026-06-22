@@ -1,5 +1,8 @@
 package it.unicam.cs.mpgc.rpg.matricola.domain;
 
+import it.unicam.cs.mpgc.rpg.matricola.application.events.EventPublisher;
+import it.unicam.cs.mpgc.rpg.matricola.application.events.GameEvent;
+
 import java.util.List;
 import java.util.random.RandomGenerator;
 
@@ -8,14 +11,22 @@ public class DomainTest {
     public static void main(String[] args) {
         System.out.println("--- AVVIO TEST: COMBAT MANAGER E STATE PATTERN ---\n");
 
-        // 1. Creazione dei personaggi
-        Character eroe = new Character("Tessitore di Fati", 30, 5) {};
-        Character nemico = new Character("Avatar dell'Entropia", 50, 0) {};
+        // 1. Creazione dei personaggi (Senza le classi anonime {})
+        Character eroe = new Character("Tessitore di Fati", 30, 5);
+        Character nemico = new Character("Avatar dell'Entropia", 50, 0);
 
-        // 2. Creazione dell'Arbitro (CombatManager)
-        CombatManager manager = new CombatManager(eroe, nemico);
+        // 2. Creazione di un EventPublisher fittizio per soddisfare il costruttore
+        EventPublisher dummyBus = new EventPublisher() {
+            @Override
+            public void publish(GameEvent event) {
+                // Nel test di dominio non ci serve una vera GUI che ascolta
+            }
+        };
 
-        // 3. Preparazione della Carta "Colpo Instabile"
+        // 3. Creazione dell'Arbitro (CombatManager) con i 3 parametri corretti!
+        CombatManager manager = new CombatManager(eroe, nemico, dummyBus);
+
+        // 4. Preparazione della Carta "Colpo Instabile"
         Rollable d6 = new StandardDice(6, RandomGenerator.getDefault());
         List<DamageTier> fasceColpoInstabile = List.of(
                 new DamageTier(1, 2, 2),
@@ -25,7 +36,7 @@ public class DomainTest {
         CardEffect effettoInstabile = new TieredDamageEffect(fasceColpoInstabile);
         Card colpoInstabile = new Card("Colpo Instabile", 1, d6, effettoInstabile);
 
-        // 4. AVVIO DEL COMBATTIMENTO
+        // 5. AVVIO DEL COMBATTIMENTO
         // Questo innescherà la StartPhase (che ripristina Focus) e passerà subito alla ActionPhase
         manager.startCombat();
 
@@ -34,7 +45,7 @@ public class DomainTest {
         System.out.println("HP Nemico: " + nemico.getCurrentHp());
         System.out.println("----------------------------------------");
 
-        // 5. Giochiamo la carta DELEGANDO al CombatManager
+        // 6. Giochiamo la carta DELEGANDO al CombatManager
         System.out.println("Tento di giocare: [" + colpoInstabile.getName() + "]");
         boolean successo = manager.playCard(colpoInstabile, nemico);
 
@@ -49,7 +60,7 @@ public class DomainTest {
         System.out.println("Focus Eroe residuo: " + eroe.getCurrentFocus());
         System.out.println("HP Nemico finali: " + nemico.getCurrentHp() + "/" + nemico.getMaxHp());
 
-        // 6. Fine del turno
+        // 7. Fine del turno
         System.out.println("\nL'eroe decide di passare il turno...");
         manager.nextPhase();
     }

@@ -5,19 +5,14 @@
 <?import javafx.scene.image.ImageView?>
 
 <StackPane fx:id="rootPane" stylesheets="@style.css" prefWidth="1200" prefHeight="800" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicam.cs.mpgc.rpg.matricola.presentation.CombatController">
-
-    <!-- Sfondo Spaziale Costante -->
     <Canvas fx:id="spaceCanvas" mouseTransparent="true" StackPane.alignment="CENTER"/>
 
-    <!-- Livello Principale UI -->
     <BorderPane fx:id="combatPane">
-
-        <!-- HUD SUPERIORE (Menu di Sistema & Info Boss) -->
         <top>
             <BorderPane styleClass="top-arena-margin" BorderPane.alignment="CENTER">
-                <!-- Tasti di Sistema spostati in alto a sinistra per non ingombrare la tattica -->
+
                 <left>
-                    <VBox alignment="TOP_LEFT">
+                    <VBox alignment="TOP_LEFT" prefWidth="160">
                         <Button text="☰" onAction="#onPauseClicked" styleClass="hamburger-button"/>
                     </VBox>
                 </left>
@@ -30,78 +25,72 @@
                     </VBox>
                 </center>
 
-                <!-- Mazzo del Boss in alto a destra (Placeholder per l'animazione Gwent) -->
                 <right>
-                    <VBox alignment="TOP_RIGHT" spacing="8">
-                        <Label text="Deck Oscuro" styleClass="boss-hp-text" style="-fx-font-size: 13px;"/>
-                        <StackPane styleClass="boss-deck-placeholder">
-                            <Label text="?" style="-fx-text-fill: #ff0055; -fx-font-size: 28px; -fx-font-weight: bold;"/>
-                        </StackPane>
-                    </VBox>
+                    <VBox alignment="TOP_RIGHT" spacing="8" prefWidth="160" styleClass="top-right-padding">
+                    <Label text="Deck Oscuro" styleClass="boss-hp-text, deck-label-small"/>
+                    <StackPane styleClass="boss-deck-placeholder" maxWidth="60">
+                        <Label text="?" styleClass="boss-deck-label"/>
+                    </StackPane>
+                </VBox>
                 </right>
+
             </BorderPane>
         </top>
 
-        <!-- ZONA CENTRALE LIBERA (Testo fluttuante senza riquadro) -->
         <center>
             <VBox alignment="CENTER" mouseTransparent="true">
                 <Label fx:id="systemLogLabel" text="In attesa di comandi..." styleClass="floating-log"/>
             </VBox>
         </center>
 
-        <!-- HUD INFERIORE (Asimmetrico) -->
         <bottom>
             <BorderPane styleClass="bottom-arena-margin" BorderPane.alignment="CENTER">
 
-                <!-- Log Battaglia in Basso a Sinistra (Spinto nell'angolo morto) -->
                 <left>
-                    <VBox alignment="BOTTOM_LEFT">
-                        <TextArea fx:id="historyLogArea" editable="false" wrapText="true" prefWidth="320" prefHeight="220" styleClass="history-log"/>
+                    <VBox alignment="BOTTOM_LEFT" prefWidth="240">
+                        <TextArea fx:id="historyLogArea" editable="false" wrapText="true" prefWidth="240" prefHeight="140" styleClass="history-log"/>
                     </VBox>
                 </left>
 
-                <!-- Mano del Giocatore & Tasto Passa Turno al Centro -->
                 <center>
                     <VBox alignment="BOTTOM_CENTER" spacing="25">
-                        <HBox fx:id="handContainer" alignment="CENTER" spacing="20" minHeight="250"/>
+                        <HBox fx:id="handContainer" alignment="CENTER" spacing="15"/>
                         <Button text="&gt; PASSA TURNO &lt;" onAction="#onNextPhaseClicked" styleClass="ps2-button"/>
                     </VBox>
                 </center>
 
-                <!-- Statistiche Eroe in Basso a Destra -->
                 <right>
-                    <VBox alignment="BOTTOM_RIGHT" spacing="15" styleClass="ps2-panel, player-stats-panel" maxWidth="300">
-                        <HBox alignment="CENTER_RIGHT">
-                            <Label fx:id="playerFocusLabel" text="Focus: 10" styleClass="player-focus-text"/>
-                        </HBox>
-                        <VBox alignment="CENTER_RIGHT" spacing="5">
-                            <Label fx:id="playerHpLabel" text="AURA Eroe: 30/30" styleClass="player-hp-text"/>
-                            <ProgressBar fx:id="playerHpBar" progress="1.0" prefWidth="260" styleClass="hp-bar"/>
+                    <StackPane alignment="BOTTOM_RIGHT" BorderPane.alignment="BOTTOM_RIGHT" prefWidth="240">
+                        <VBox alignment="CENTER" spacing="12" styleClass="ps2-panel, player-stats-panel" maxHeight="-Infinity" maxWidth="220" translateY="-20">
+                            <Label fx:id="playerFocusLabel" text="Focus: 10" styleClass="player-focus-text, combat-focus-text"/>
+
+                            <VBox alignment="CENTER" spacing="6">
+                                <Label fx:id="playerHpLabel" text="AURA Eroe: 30/30" styleClass="player-hp-text"/>
+                                <ProgressBar fx:id="playerHpBar" progress="1.0" prefWidth="190" styleClass="hp-bar"/>
+                            </VBox>
                         </VBox>
-                    </VBox>
+                    </StackPane>
                 </right>
+
             </BorderPane>
         </bottom>
     </BorderPane>
 
-    <!-- LIVELLO 2: OVERLAY DADO -->
     <VBox fx:id="diceOverlay" visible="false" alignment="CENTER" spacing="15" styleClass="dice-screen-overlay">
         <Label text="[ TIRA I DADI PER ATTACCARE ]" styleClass="dice-overlay-title"/>
         <Label fx:id="diceValueLabel" text="⚀" styleClass="dice-live-value"/>
     </VBox>
 
-    <!-- LIVELLO 3: OVERLAY CARTA NEMICA (Stile Gwent) -->
     <VBox fx:id="enemyCardOverlay" visible="false" alignment="CENTER" mouseTransparent="true" styleClass="enemy-overlay-bg">
         <StackPane styleClass="card-container, enemy-card-glow" scaleX="1.3" scaleY="1.3">
             <ImageView fx:id="enemyCardImage" fitWidth="280" fitHeight="400" />
-            <!-- Placeholder temporaneo se manca l'immagine -->
             <Label fx:id="enemyOverlayText" text="Lacerazione Spaziale" styleClass="card-title" wrapText="true"/>
         </StackPane>
     </VBox>
 
     <VBox fx:id="pauseMenuOverlay" visible="false" alignment="CENTER" styleClass="pause-overlay-bg">
         <VBox alignment="CENTER" spacing="20" maxWidth="350" styleClass="ps2-panel, menu-box">
-            <Label text="SISTEMA IN PAUSA" styleClass="title-text" style="-fx-font-size: 28px;"/>
+            <Label text="SISTEMA IN PAUSA" styleClass="title-text, pause-title"/>
             <Button text="[ RIPRENDI ]" onAction="#onResumeClicked" styleClass="ps2-button" maxWidth="Infinity"/>
             <Button text="[ CARICA PARTITA ]" onAction="#onLoadInCombatClicked" styleClass="system-button" maxWidth="Infinity"/>
             <Button text="[ SALVA PARTITA ]" onAction="#onSaveClicked" styleClass="system-button" maxWidth="Infinity"/>

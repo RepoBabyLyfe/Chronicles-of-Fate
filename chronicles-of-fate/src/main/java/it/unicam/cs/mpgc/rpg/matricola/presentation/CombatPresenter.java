@@ -2,16 +2,19 @@ package it.unicam.cs.mpgc.rpg.matricola.presentation;
 
 import it.unicam.cs.mpgc.rpg.matricola.application.events.HpChangedEvent;
 import it.unicam.cs.mpgc.rpg.matricola.domain.Character;
+import it.unicam.cs.mpgc.rpg.matricola.domain.CombatResult;
 import javafx.application.Platform;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.animation.TranslateTransition;
 import javafx.scene.Node;
 import javafx.util.Duration;
 
+import java.util.Optional;
+
 /**
  * Presenter dedicato alla gestione dello stato visivo dell'arena di combattimento.
+ * Non gestisce la navigazione né i popup — restituisce dati strutturati al Controller.
  */
 public class CombatPresenter {
 
@@ -77,19 +80,21 @@ public class CombatPresenter {
     }
 
     /**
-     * Valuta le condizioni di game over e gestisce i relativi popup.
+     * Valuta le condizioni di game over e restituisce il risultato strutturato.
+     * Non mostra popup — la navigazione è responsabilità del Controller.
+     * @return Optional contenente il CombatResult se il combattimento è finito.
      */
-    public boolean checkGameOver() {
+    public Optional<CombatResult> checkGameOver() {
+        if (player == null || enemy == null) return Optional.empty();
+
         if (!player.isAlive()) {
-            notificationManager.logMessage("💀FAAAAHHH!!! HAI PERSO... L'Entropia ha vinto.");
-            notificationManager.showGameOverPopup("Sconfitta", "Il Tessitore di Fati è caduto. Il multiverso è collassato.", Alert.AlertType.ERROR);
-            return true;
+            notificationManager.logMessage("💀 L'Entropia ha prevalso...");
+            return Optional.of(CombatResult.defeat());
         } else if (!enemy.isAlive()) {
-            notificationManager.logMessage("🏆 HAI VINTO!");
-            notificationManager.showGameOverPopup("Vittoria Suprema!", "Hai sconfitto l'Avatar dell'Entropia e ripristinato l'ordine!", Alert.AlertType.INFORMATION);
-            return true;
+            notificationManager.logMessage("🏆 Il nemico è stato annientato!");
+            return Optional.of(CombatResult.victory());
         }
-        return false;
+        return Optional.empty();
     }
 
     /**
@@ -114,10 +119,10 @@ public class CombatPresenter {
     private void shakeNode(Node node) {
         if (node == null) return;
         TranslateTransition shake = new TranslateTransition(Duration.millis(40), node);
-        shake.setByX(12); // Spostamento di 12 pixel a destra e sinistra
-        shake.setCycleCount(6); // Quante volte vibra
+        shake.setByX(12);
+        shake.setCycleCount(6);
         shake.setAutoReverse(true);
-        shake.setOnFinished(e -> node.setTranslateX(0)); // Lo rimette al suo posto
+        shake.setOnFinished(e -> node.setTranslateX(0));
         shake.play();
     }
 }

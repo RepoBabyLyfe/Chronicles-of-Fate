@@ -31,12 +31,7 @@ public class MenuController {
 
     @FXML
     public void onStartGameClicked() {
-        GameService service = SceneManager.getInstance().getGameService();
-        Character player = GameFactory.createPlayer();
-        Character enemy = GameFactory.createEnemy();
-
-        service.startNewGame(player, enemy);
-        SceneManager.getInstance().switchScene("/combat_view.fxml");
+        SceneManager.getInstance().switchScene("/deck_builder_view.fxml");
     }
 
     @FXML
@@ -58,5 +53,10 @@ public class MenuController {
     public void onExitClicked() {
         Platform.exit();
         System.exit(0);
+    }
+
+    @FXML
+    public void onShopClicked() {
+        SceneManager.getInstance().switchScene("/shop_view.fxml");
     }
 }

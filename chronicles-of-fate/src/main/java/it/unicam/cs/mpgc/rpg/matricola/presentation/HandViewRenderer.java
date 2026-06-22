@@ -2,25 +2,42 @@ package it.unicam.cs.mpgc.rpg.matricola.presentation;
 
 import it.unicam.cs.mpgc.rpg.matricola.domain.Card;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.control.Label;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
+/**
+ * Motore di rendering delle carte nella UI.
+ * Supporta scalatura, slot vuoti, hover callback, e stati visivi (disabilitato, selezionato).
+ */
 public class HandViewRenderer {
 
-    private final HBox handContainer;
+    private final Pane handContainer;
     private final Consumer<Card> onCardClicked;
+    private Consumer<Card> onCardHoverEnter;
+    private Consumer<Card> onCardHoverExit;
     private Image cardTemplateImage;
+    private final double scaleFactor;
+    private final int maxSlots;
 
-    public HandViewRenderer(HBox handContainer, Consumer<Card> onCardClicked) {
+    public HandViewRenderer(Pane handContainer, Consumer<Card> onCardClicked) {
+        this(handContainer, 1.0, 0, onCardClicked);
+    }
+
+    public HandViewRenderer(Pane handContainer, double scaleFactor, int maxSlots, Consumer<Card> onCardClicked) {
         this.handContainer = handContainer;
+        this.scaleFactor = scaleFactor;
+        this.maxSlots = maxSlots;
         this.onCardClicked = onCardClicked;
 
         try {
@@ -29,82 +46,150 @@ public class HandViewRenderer {
                 this.cardTemplateImage = new Image(imageStream);
             }
         } catch (Exception e) {
-            System.out.println("[GUI WARN] Template grafico carta non trovato. Uso fallback CSS.");
+            System.out.println("[GUI WARN] Template grafico carta non trovato.");
         }
     }
 
+    /**
+     * Imposta i callback per il passaggio del mouse sulle carte.
+     */
+    public void setHoverCallbacks(Consumer<Card> onEnter, Consumer<Card> onExit) {
+        this.onCardHoverEnter = onEnter;
+        this.onCardHoverExit = onExit;
+    }
+
     public void renderHand(List<Card> cards, int currentFocus, boolean isAnimating) {
+        renderHand(cards, currentFocus, isAnimating, Collections.emptyList(), Collections.emptyList());
+    }
+
+    public void renderHand(List<Card> cards, int currentFocus, boolean isAnimating, List<Card> disabledCards) {
+        renderHand(cards, currentFocus, isAnimating, disabledCards, Collections.emptyList());
+    }
+
+    /**
+     * Renderizza le carte con supporto per carte selezionate (bordo verde glow).
+     */
+    public void renderHand(List<Card> cards, int currentFocus, boolean isAnimating,
+                           List<Card> disabledCards, List<Card> selectedCards) {
         handContainer.getChildren().clear();
         if (isAnimating) return;
 
+        int drawnCards = 0;
+
         for (Card card : cards) {
-            // 1. LA RADICE
-            StackPane cardRoot = new StackPane();
-            cardRoot.getStyleClass().add("card-container");
-            // Dimensioni BILANCIATE (280x400)
-            cardRoot.setPrefWidth(280);
-            cardRoot.setPrefHeight(400);
+            boolean isSelected = selectedCards.contains(card);
+            StackPane cardRoot = buildCardNode(card, currentFocus, disabledCards, isSelected);
+            wrapAndAdd(cardRoot);
+            drawnCards++;
+        }
 
-            // 2. LIVELLO INFERIORE: L'immagine
-            ImageView bgImageView = new ImageView();
-            Image specificImage = null;
+        while (drawnCards < maxSlots) {
+            StackPane emptySlot = new StackPane();
+            emptySlot.setPrefWidth(280);
+            emptySlot.setPrefHeight(400);
+            emptySlot.getStyleClass().add("empty-card-slot");
 
-            if (card.getImagePath() != null) {
-                try {
-                    var stream = getClass().getResourceAsStream(card.getImagePath());
-                    if (stream != null) specificImage = new Image(stream);
-                } catch (Exception e) {
-                    System.out.println("Immagine non trovata: " + card.getImagePath());
-                }
-            }
+            Label emptyLabel = new Label("SLOT VUOTO");
+            emptyLabel.getStyleClass().add("empty-slot-label");
+            emptySlot.getChildren().add(emptyLabel);
 
-            if (specificImage != null) {
-                bgImageView.setImage(specificImage);
-            } else if (cardTemplateImage != null) {
-                bgImageView.setImage(cardTemplateImage);
-            }
+            wrapAndAdd(emptySlot);
+            drawnCards++;
+        }
+    }
 
-            if (bgImageView.getImage() != null) {
-                // Adattiamo l'immagine alle nuove dimensioni
-                bgImageView.setFitWidth(280);
-                bgImageView.setFitHeight(400);
-                bgImageView.setPreserveRatio(false);
-
-                // Maschera di ritaglio arrotondata adattata
-                Rectangle clip = new Rectangle(280, 400);
-                clip.setArcWidth(32);
-                clip.setArcHeight(32);
-                bgImageView.setClip(clip);
-            }
-
-            // Aggiungiamo SEMPRE lo sfondo
-            cardRoot.getChildren().add(bgImageView);
-
-            // 3. LIVELLO SUPERIORE (TESTI): Solo per carte generiche
-            if (specificImage == null) {
-                VBox textLayer = new VBox(15);
-                textLayer.setAlignment(Pos.TOP_CENTER);
-                // Padding riadattato
-                textLayer.setStyle("-fx-padding: 25px 10px 10px 10px;");
-
-                Label costLabel = new Label(card.getManaCost() + " Focus");
-                costLabel.getStyleClass().add("card-cost");
-
-                Label titleLabel = new Label(card.getName());
-                titleLabel.getStyleClass().add("card-title");
-
-                textLayer.getChildren().addAll(costLabel, titleLabel);
-                cardRoot.getChildren().add(textLayer);
-            }
-
-            // 4. Logica di disattivazione o click
-            if (card.getManaCost() > currentFocus) {
-                cardRoot.setOpacity(0.4);
-            } else {
-                cardRoot.setOnMouseClicked(e -> onCardClicked.accept(card));
-            }
-
+    private void wrapAndAdd(StackPane cardRoot) {
+        if (scaleFactor != 1.0) {
+            cardRoot.setScaleX(scaleFactor);
+            cardRoot.setScaleY(scaleFactor);
+            handContainer.getChildren().add(new Group(cardRoot));
+        } else {
             handContainer.getChildren().add(cardRoot);
         }
+    }
+
+    private StackPane buildCardNode(Card card, int currentFocus, List<Card> disabledCards, boolean isSelected) {
+        StackPane cardRoot = new StackPane();
+        cardRoot.getStyleClass().add("card-container");
+        if (isSelected) {
+            cardRoot.getStyleClass().add("card-selected");
+        }
+        cardRoot.setPrefWidth(280);
+        cardRoot.setPrefHeight(400);
+
+        ImageView bgImageView = createCardImage(card);
+        cardRoot.getChildren().add(bgImageView);
+
+        // Fallback testuale se l'immagine specifica non c'è
+        Image specificImage = loadSpecificImage(card);
+        if (specificImage == null) {
+            VBox textLayer = createTextLayer(card);
+            cardRoot.getChildren().add(textLayer);
+        }
+
+        // Stato disabilitato
+        if (card.getManaCost() > currentFocus || disabledCards.contains(card)) {
+            cardRoot.setOpacity(0.5);
+            ColorAdjust grayscale = new ColorAdjust();
+            grayscale.setSaturation(-1.0);
+            cardRoot.setEffect(grayscale);
+        } else {
+            cardRoot.setOnMouseClicked(e -> onCardClicked.accept(card));
+        }
+
+        // Hover callbacks
+        if (onCardHoverEnter != null) {
+            cardRoot.setOnMouseEntered(e -> onCardHoverEnter.accept(card));
+        }
+        if (onCardHoverExit != null) {
+            cardRoot.setOnMouseExited(e -> onCardHoverExit.accept(card));
+        }
+
+        return cardRoot;
+    }
+
+    private ImageView createCardImage(Card card) {
+        ImageView bgImageView = new ImageView();
+        Image specificImage = loadSpecificImage(card);
+
+        if (specificImage != null) bgImageView.setImage(specificImage);
+        else if (cardTemplateImage != null) bgImageView.setImage(cardTemplateImage);
+
+        if (bgImageView.getImage() != null) {
+            bgImageView.setFitWidth(280);
+            bgImageView.setFitHeight(400);
+            bgImageView.setPreserveRatio(false);
+
+            Rectangle clip = new Rectangle(280, 400);
+            clip.setArcWidth(32);
+            clip.setArcHeight(32);
+            bgImageView.setClip(clip);
+        }
+
+        return bgImageView;
+    }
+
+    private Image loadSpecificImage(Card card) {
+        if (card.getImagePath() == null) return null;
+        try {
+            var stream = getClass().getResourceAsStream(card.getImagePath());
+            if (stream != null) return new Image(stream);
+        } catch (Exception ignored) {}
+        return null;
+    }
+
+    private VBox createTextLayer(Card card) {
+        VBox textLayer = new VBox(15);
+        textLayer.setAlignment(Pos.TOP_CENTER);
+        textLayer.getStyleClass().add("card-text-padding");
+
+        Label costLabel = new Label(card.getManaCost() + " Focus");
+        costLabel.getStyleClass().add("card-cost");
+
+        Label titleLabel = new Label(card.getName());
+        titleLabel.getStyleClass().add("card-title");
+
+        textLayer.getChildren().addAll(costLabel, titleLabel);
+        return textLayer;
     }
 }

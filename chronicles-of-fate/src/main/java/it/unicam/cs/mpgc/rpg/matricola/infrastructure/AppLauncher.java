@@ -9,12 +9,11 @@ public class AppLauncher extends Application {
     public void start(Stage primaryStage) throws Exception {
         SceneManager.getInstance().init(primaryStage);
         primaryStage.setTitle("Chronicles of Fate");
+        primaryStage.setMaximized(true);
+        primaryStage.setMinWidth(1200);
+        primaryStage.setMinHeight(800);
+
         SceneManager.getInstance().switchScene("/menu_view.fxml");
-
         primaryStage.show();
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }

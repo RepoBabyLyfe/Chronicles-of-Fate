@@ -15,6 +15,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.canvas.Canvas;
+import javafx.animation.PauseTransition;
+import javafx.util.Duration;
+
+import java.util.Optional;
 
 public class CombatController implements EventPublisher {
 
@@ -57,6 +61,7 @@ public class CombatController implements EventPublisher {
     private Character enemy;
     private Deck playerDeck;
     private boolean isAnimating = false;
+    private boolean isCombatOver = false;
     private EnemyCardAnimator enemyCardAnimator;
 
     private DiceAnimator diceAnimator;
@@ -68,15 +73,12 @@ public class CombatController implements EventPublisher {
     @FXML
     public void initialize() {
         this.gameService = SceneManager.getInstance().getGameService();
-        SceneManager.getInstance().subscribe(this);
 
-        if (gameService.getCombatManager() != null) {
-            gameService.getCombatManager().subscribe(this);
-        }
+        it.unicam.cs.mpgc.rpg.matricola.infrastructure.GameEventBus.getInstance().subscribe(this);
 
         this.notificationManager = new UINotificationManager(systemLogLabel);
         this.diceAnimator = new DiceAnimator(diceOverlay, diceValueLabel);
-        this.handRenderer = new HandViewRenderer(handContainer, this::playSpecificCard);
+        this.handRenderer = new HandViewRenderer(handContainer, 0.75, 0, this::playSpecificCard);
 
         this.combatPresenter = new CombatPresenter(
                 playerHpLabel, playerFocusLabel, enemyHpLabel,
@@ -85,7 +87,7 @@ public class CombatController implements EventPublisher {
 
         this.player = gameService.getCombatManager().getPlayer();
         this.enemy = gameService.getCombatManager().getEnemy();
-        this.playerDeck = GameFactory.createStartingDeck();
+        this.playerDeck = gameService.getCustomDeck();
 
         combatPresenter.setCharacters(player, enemy);
         playerDeck.drawCards(3);
@@ -114,7 +116,10 @@ public class CombatController implements EventPublisher {
         if (!player.isAlive() || !enemy.isAlive() || gameService.getCombatManager() == null) return;
 
         isAnimating = true;
-        int hpPrima = enemy.getCurrentHp();
+        int enemyHpPrima = enemy.getCurrentHp();
+        int playerHpPrima = player.getCurrentHp();
+        int playerFocusPrima = player.getCurrentFocus();
+
         boolean successo = gameService.getCombatManager().playCard(card, enemy);
 
         if (!successo) {
@@ -123,95 +128,114 @@ public class CombatController implements EventPublisher {
             return;
         }
 
-        int dannoFatto = hpPrima - enemy.getCurrentHp();
+        int dannoBoss = enemyHpPrima - enemy.getCurrentHp();
+        int deltaAura = player.getCurrentHp() - playerHpPrima;
+        int deltaFocus = player.getCurrentFocus() - playerFocusPrima;
 
         if (card.requiresDice()) {
             int realRoll = gameService.getCombatManager().getLastDiceRoll();
-            diceAnimator.playRollSequence(realRoll, () -> finishCardPlay(card, dannoFatto));
+            diceAnimator.playRollSequence(realRoll, () -> finishCardPlay(card, dannoBoss, deltaAura, deltaFocus, realRoll));
         } else {
-            finishCardPlay(card, dannoFatto);
+            finishCardPlay(card, dannoBoss, deltaAura, deltaFocus, 0);
         }
     }
 
-    private void finishCardPlay(Card card, int dannoFatto) {
-        isAnimating = false; // L'animazione è finita, sblocchiamo la UI!
+    private void finishCardPlay(Card card, int dannoBoss, int deltaAura, int deltaFocus, int roll) {
+        isAnimating = false;
 
-        // 1. Logica degli eventi di log
-        if (dannoFatto > 0) {
-            publish(new DamageTakenEvent(enemy, dannoFatto, true));
-            publish(new LogEvent("Colpo a segno! Inflitti " + dannoFatto + " danni all'Entropia!"));
-        } else {
-            publish(new LogEvent("L'Etere ha risposto al tuo comando. Effetto applicato!"));
-        }
+        StringBuilder messaggio = new StringBuilder("[EROE] Gioca " + card.getName() + " ");
+        messaggio.append("(-").append(card.getManaCost()).append(" Focus). ");
 
-        // 2. BROADCAST DEGLI HP E DEL FOCUS (FIX BUG 2)
-        // Diciamo alla UI di aggiornare le barre in base ai veri valori del dominio!
+        if (roll > 0) messaggio.append("Dado: ").append(roll).append(". ");
+
+        if (dannoBoss > 0) messaggio.append("Infligge ").append(dannoBoss).append(" danni al Boss! ");
+
+        if (deltaAura > 0) messaggio.append("Si cura di ").append(deltaAura).append(" AURA. ");
+        else if (deltaAura < 0) messaggio.append("Subisce ").append(Math.abs(deltaAura)).append(" danni da contraccolpo. ");
+
+        int focusGenerato = deltaFocus + card.getManaCost();
+        if (focusGenerato > 0) messaggio.append("Genera ").append(focusGenerato).append(" Focus extra.");
+
+        publish(new LogEvent(messaggio.toString().trim()));
+
+        if (dannoBoss > 0) publish(new DamageTakenEvent(enemy, dannoBoss, true));
+        if (deltaAura < 0) publish(new DamageTakenEvent(player, Math.abs(deltaAura), true));
+
         publish(new HpChangedEvent(enemy, enemy.getCurrentHp(), enemy.getMaxHp()));
         publish(new HpChangedEvent(player, player.getCurrentHp(), player.getMaxHp()));
         if (playerFocusLabel != null) {
             playerFocusLabel.setText("Focus: " + player.getCurrentFocus());
         }
 
-        // 3. Gestione del mazzo
         playerDeck.discardCard(card);
         renderHand();
         combatPresenter.updateUI();
-        combatPresenter.checkGameOver();
+
+        handleGameOverIfNeeded();
+    }
+
+    /**
+     * Verifica se il combattimento è finito e naviga alla schermata di esito.
+     */
+    private void handleGameOverIfNeeded() {
+        if (isCombatOver) return; // Guard: già gestito
+
+        Optional<CombatResult> result = combatPresenter.checkGameOver();
+        result.ifPresent(combatResult -> {
+            isCombatOver = true;
+
+            // Finalizziamo il combattimento nel Service
+            gameService.endCombat(combatResult);
+
+            // Piccola pausa drammatica prima della navigazione
+            PauseTransition pause = new PauseTransition(Duration.seconds(1.5));
+            pause.setOnFinished(e -> SceneManager.getInstance().switchScene("/victory_view.fxml"));
+            pause.play();
+        });
     }
 
     @FXML
     public void onNextPhaseClicked() {
         if (!player.isAlive() || !enemy.isAlive() || gameService.getCombatManager() == null) return;
-
-        // Evita sovrapposizioni: se i dadi girano, il tasto è bloccato
         if (isAnimating) return;
-
-        // 1. Eseguiamo la catena di eventi del turno (Il boss attacca e il Focus si ricarica)
         gameService.getCombatManager().nextPhase();
 
-        // 2. BROADCAST DEGLI HP E DEL FOCUS (Aggiorna la UI dopo l'attacco del boss)
         publish(new HpChangedEvent(player, player.getCurrentHp(), player.getMaxHp()));
         publish(new HpChangedEvent(enemy, enemy.getCurrentHp(), enemy.getMaxHp()));
         if (playerFocusLabel != null) {
             playerFocusLabel.setText("Focus: " + player.getCurrentFocus());
         }
-
-        // 3. Ciclo delle carte corretto
-        playerDeck.discardHand();
-        playerDeck.drawCards(3);
-        renderHand();
         combatPresenter.updateUI();
-        combatPresenter.checkGameOver();
+        handleGameOverIfNeeded();
     }
 
     @FXML
     public void onPauseClicked() {
-        if (isAnimating) return; // Impedisce di mettere in pausa mentre rotolano i dadi o attacca il boss
+        if (isAnimating) return;
         pauseMenuOverlay.setVisible(true);
-        isAnimating = true; // Blocca la mano di carte in background
+        isAnimating = true;
     }
 
     @FXML
     public void onResumeClicked() {
         pauseMenuOverlay.setVisible(false);
-        isAnimating = false; // Sblocca la mano di carte
+        isAnimating = false;
     }
 
     @FXML
     public void onLoadInCombatClicked() {
         try {
             gameService.loadGame(player, enemy);
-            gameService.getCombatManager().subscribe(this); // Ricolleghiamo gli eventi al nuovo manager caricato
 
-            playerDeck = GameFactory.createStartingDeck();
+            playerDeck = gameService.getCustomDeck();
             playerDeck.drawCards(3);
             renderHand();
             combatPresenter.updateUI();
 
             notificationManager.logMessage("Sincronizzazione completata. Partita caricata.");
-            onResumeClicked(); // Chiudiamo il menù di pausa
+            onResumeClicked();
         } catch (Exception e) {
-            notificationManager.showGameOverPopup("Errore Etereo", "Nessun salvataggio trovato nei registri.", javafx.scene.control.Alert.AlertType.WARNING);
+            notificationManager.logMessage("Errore: Nessun salvataggio trovato nei registri.");
         }
     }
 
@@ -222,9 +246,8 @@ public class CombatController implements EventPublisher {
         this.enemy = GameFactory.createEnemy();
         gameService.startNewGame(player, enemy);
 
-        this.playerDeck = GameFactory.createStartingDeck();
+        this.playerDeck = gameService.getCustomDeck();
         combatPresenter.setCharacters(player, enemy);
-        gameService.getCombatManager().subscribe(this);
 
         playerDeck.drawCards(3);
         renderHand();
@@ -255,15 +278,13 @@ public class CombatController implements EventPublisher {
             if (damageEvent.target() == enemy) combatPresenter.playBossDamageAnimation();
             else if (damageEvent.target() == player) combatPresenter.playPlayerDamageAnimation();
         } else if (event instanceof EnemyCardPlayedEvent enemyEvent) {
-            // 3. Quando riceviamo la carta del Boss, avviamo l'animazione
             enemyCardAnimator.playAnimation(enemyEvent.cardName(), enemyEvent.imagePath(), () -> {
-                // 4. ANIMAZIONE FINITA! Aggiorniamo la mano dell'Eroe e sblocchiamo la UI
                 playerDeck.discardHand();
                 playerDeck.drawCards(3);
                 renderHand();
                 combatPresenter.updateUI();
-                combatPresenter.checkGameOver();
-                isAnimating = false; // SBLOCCA LA UI
+                handleGameOverIfNeeded();
+                isAnimating = false;
             });
         }
     }

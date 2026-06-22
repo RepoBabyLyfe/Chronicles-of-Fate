@@ -16,15 +16,32 @@
 }
 
 .player-stats-panel {
-    -fx-padding: 20px;
-    -fx-background-color: rgba(10, 20, 42, 0.7);
-    -fx-border-color: rgba(0, 229, 255, 0.4);
+    -fx-padding: 22px 30px; /* Aumentato lo spazio interno per renderlo meno striminzito */
+    -fx-background-color: rgba(10, 20, 42, 0.85);
+    -fx-border-color: rgba(0, 229, 255, 0.6);
+    -fx-border-width: 1.5;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
 }
 
 .menu-box { -fx-padding: 40px; }
-.top-arena-margin { -fx-padding: 25px; }
-.bottom-arena-margin { -fx-padding: 0px 30px 30px 30px; }
+.top-arena-margin {
+    -fx-padding: 20px 30px 0px 30px;
+}
 
+.bottom-arena-margin {
+    -fx-padding: 0px 30px 20px 30px;
+}
+
+.top-right-padding {
+    -fx-padding: 0 15 0 0;
+}
+
+.boss-deck-label {
+    -fx-text-fill: #ff0055;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
 /* --- INTERFACCIA DI INPUT --- */
 .ps2-button {
     -fx-background-color: rgba(0, 229, 255, 0.05);
@@ -80,11 +97,12 @@
     -fx-border-radius: 16;
 }
 
+/* Rimuoviamo il salto (-20) e lasciamo solo il bagliore */
 .card-container:hover {
-    -fx-translate-y: -20;
+    -fx-translate-y: 0;
     -fx-border-color: #00e5ff;
     -fx-background-color: rgba(15, 25, 45, 0.98);
-    -fx-effect: dropshadow(gaussian, rgba(0, 229, 255, 0.75), 35, 0, 0, 0);
+    -fx-effect: dropshadow(gaussian, rgba(0, 229, 255, 0.75), 15, 0, 0, 0);
 }
 
 .enemy-card-glow {
@@ -234,4 +252,208 @@
 
 .pause-overlay-bg {
     -fx-background-color: rgba(5, 5, 12, 0.90); /* Oscura l'arena quasi totalmente */
+}
+
+/* --- SLOT VUOTI DEL MAZZO --- */
+.empty-card-slot {
+    -fx-background-color: rgba(0, 229, 255, 0.05);
+    -fx-border-color: rgba(0, 229, 255, 0.3);
+    -fx-border-style: dashed;
+    -fx-border-width: 2;
+    -fx-border-radius: 16;
+    -fx-background-radius: 16;
+    -fx-alignment: center;
+}
+
+/* --- SCROLLPANE --- */
+.clean-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-padding: 10px;
+}
+
+.clean-scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+/* Barra di scorrimento laterale stilizzata per abbinarsi all'UI */
+.clean-scroll-pane .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 8px;
+}
+.clean-scroll-pane .scroll-bar:vertical .thumb {
+    -fx-background-color: rgba(0, 229, 255, 0.4);
+    -fx-background-radius: 4px;
+}
+
+/* --- SCHERMATA VITTORIA/SCONFITTA --- */
+.outcome-title {
+    -fx-font-size: 56px;
+}
+
+.victory-title {
+    -fx-text-fill: #00e5ff;
+    -fx-effect: dropshadow(gaussian, rgba(0, 229, 255, 0.8), 40, 0, 0, 0);
+}
+
+.defeat-title {
+    -fx-text-fill: #ff0055;
+    -fx-effect: dropshadow(gaussian, rgba(255, 0, 85, 0.8), 40, 0, 0, 0);
+}
+
+.victory-panel {
+    -fx-padding: 35px 50px;
+    -fx-background-color: rgba(10, 20, 42, 0.8);
+    -fx-border-color: rgba(0, 229, 255, 0.5);
+}
+
+.victory-subtitle {
+    -fx-font-size: 18px;
+    -fx-text-fill: #a0a0b0;
+    -fx-text-alignment: center;
+    -fx-wrap-text: true;
+}
+
+.victory-fragments {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #00e5ff;
+    -fx-effect: dropshadow(gaussian, rgba(0, 229, 255, 0.6), 20, 0, 0, 0);
+}
+
+.defeat-fragments {
+    -fx-text-fill: #666680;
+    -fx-font-size: 20px;
+}
+
+/* --- CARTE SELEZIONATE NEL DECK BUILDER --- */
+.card-selected {
+    -fx-border-color: #00ff88;
+    -fx-border-width: 3;
+    -fx-effect: dropshadow(gaussian, rgba(0, 255, 136, 0.7), 20, 0, 0, 0);
+}
+
+/* --- BADGE NEGOZIO --- */
+.shop-price-badge {
+    -fx-background-color: rgba(0, 0, 0, 0.85);
+    -fx-text-fill: #ffcc00;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 4 12;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: rgba(255, 204, 0, 0.5);
+    -fx-border-width: 1;
+}
+
+.shop-owned-badge {
+    -fx-background-color: rgba(0, 255, 136, 0.15);
+    -fx-text-fill: #00ff88;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 4 12;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: rgba(0, 255, 136, 0.4);
+    -fx-border-width: 1;
+}
+
+.shop-locked-price {
+    -fx-text-fill: #ff3366;
+}
+
+/* --- EMPTY CARD SLOT LABEL --- */
+.empty-slot-label {
+    -fx-text-fill: rgba(0, 229, 255, 0.3);
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+}
+
+/* --- DECK BUILDER --- */
+.deck-builder-padding {
+    -fx-padding: 30 20 30 20;
+}
+
+.deck-builder-title {
+    -fx-font-size: 32px;
+}
+
+.deck-count-label {
+    -fx-font-size: 32px;
+    -fx-text-fill: #b432ff;
+}
+
+.deck-builder-hint {
+    -fx-font-size: 15px;
+    -fx-text-fill: #a0a0b0;
+}
+
+.deck-builder-separator {
+    -fx-opacity: 0.3;
+    -fx-effect: dropshadow(gaussian, #00e5ff, 5, 0, 0, 0);
+}
+
+.deck-builder-bottom {
+    -fx-padding: 20 0 0 0;
+}
+
+/* --- NEGOZIO --- */
+.shop-header {
+    -fx-padding: 30px 20px 0px 20px;
+}
+
+.shop-title {
+    -fx-font-size: 38px;
+}
+
+.shop-fragments {
+    -fx-text-fill: #00e5ff;
+}
+
+.shop-section-title {
+    -fx-text-fill: #b432ff;
+}
+
+.shop-status {
+    -fx-font-size: 16px;
+}
+
+.shop-status-success {
+    -fx-text-fill: #00ffcc;
+}
+
+.shop-status-error {
+    -fx-text-fill: #ff3366;
+}
+
+.shop-footer {
+    -fx-padding: 0px 20px 40px 20px;
+}
+
+/* --- ZOOM OVERLAY --- */
+.zoom-card-frame {
+    -fx-border-color: #b432ff;
+    -fx-effect: dropshadow(gaussian, rgba(180, 50, 255, 0.6), 40, 0, 0, 0);
+}
+
+/* --- CARD TEXT PADDING --- */
+.card-text-padding {
+    -fx-padding: 25px 10px 10px 10px;
+}
+
+/* --- COMBAT VIEW EXTRACTED STYLES --- */
+.deck-label-small {
+    -fx-font-size: 13px;
+}
+
+.combat-focus-text {
+    -fx-font-size: 22px;
+}
+
+.pause-title {
+    -fx-font-size: 28px;
+}
+
+/* History log text visible */
+.history-log .text {
+    -fx-fill: #ffffff;
 }

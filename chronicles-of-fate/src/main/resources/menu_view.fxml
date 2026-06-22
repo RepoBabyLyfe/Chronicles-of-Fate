@@ -12,6 +12,7 @@
         <VBox alignment="CENTER" spacing="20" maxWidth="350" styleClass="ps2-panel, menu-box">
             <Button text="[ NUOVA PARTITA ]" onAction="#onStartGameClicked" styleClass="ps2-button" maxWidth="Infinity"/>
             <Button text="[ CARICA PARTITA ]" onAction="#onLoadGameClicked" styleClass="ps2-button" maxWidth="Infinity"/>
+            <Button text="[ NEGOZIO ]" onAction="#onShopClicked" styleClass="ps2-button" maxWidth="Infinity"/>
             <Button text="[ ESCI ]" onAction="#onExitClicked" styleClass="system-button" maxWidth="Infinity"/>
         </VBox>
     </VBox>
