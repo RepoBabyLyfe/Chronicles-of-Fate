@@ -24,7 +24,7 @@ public class ShopController {
 
     @FXML private StackPane rootPane;
     @FXML private Canvas spaceCanvas;
-    @FXML private Label fragmentsLabel;
+    @FXML private Label crystalCountLabel;
     @FXML private FlowPane shopContainer;
     @FXML private Label statusLabel;
     @FXML private StackPane zoomOverlayPane;
@@ -39,14 +39,7 @@ public class ShopController {
     @FXML
     public void initialize() {
         if (spaceCanvas != null && rootPane != null) {
-            rootPane.widthProperty().addListener((obs, oldVal, newVal) -> spaceCanvas.setWidth(newVal.doubleValue()));
-            rootPane.heightProperty().addListener((obs, oldVal, newVal) -> spaceCanvas.setHeight(newVal.doubleValue()));
-            spaceCanvas.setWidth(rootPane.getPrefWidth());
-            spaceCanvas.setHeight(rootPane.getPrefHeight());
-
-            this.spaceBackgroundEngine = new SpaceBackgroundEngine(spaceCanvas);
-            rootPane.setOnMouseMoved(e -> spaceBackgroundEngine.updateMouseCoordinates(e.getX(), e.getY()));
-            this.spaceBackgroundEngine.start();
+            this.spaceBackgroundEngine = SpaceBackgroundInitializer.setup(rootPane, spaceCanvas);
         }
 
         GameService gameService = SceneManager.getInstance().getGameService();
@@ -87,7 +80,9 @@ public class ShopController {
     }
 
     private void updateView() {
-        fragmentsLabel.setText("Frammenti di Etere: " + profile.getEtherFragments() + " ✨");
+        if (crystalCountLabel != null) {
+            crystalCountLabel.setText(String.valueOf(profile.getEtherFragments()));
+        }
 
         // Puliamo e ricostruiamo manualmente con badge prezzo
         shopContainer.getChildren().clear();

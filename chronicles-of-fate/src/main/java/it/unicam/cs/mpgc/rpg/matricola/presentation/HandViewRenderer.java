@@ -15,12 +15,15 @@ import javafx.scene.shape.Rectangle;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 
 /**
  * Motore di rendering delle carte nella UI.
  * Supporta scalatura, slot vuoti, hover callback, e stati visivi (disabilitato, selezionato).
  */
 public class HandViewRenderer {
+
+    private static final Logger LOGGER = Logger.getLogger(HandViewRenderer.class.getName());
 
     private final Pane handContainer;
     private final Consumer<Card> onCardClicked;
@@ -46,7 +49,7 @@ public class HandViewRenderer {
                 this.cardTemplateImage = new Image(imageStream);
             }
         } catch (Exception e) {
-            System.out.println("[GUI WARN] Template grafico carta non trovato.");
+            LOGGER.warning("[GUI WARN] Template grafico carta non trovato.");
         }
     }
 

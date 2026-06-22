@@ -3,11 +3,14 @@ package it.unicam.cs.mpgc.rpg.matricola.domain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Gestisce il grimorio del giocatore: mazzo, mano e pila degli scarti.
  */
 public class Deck {
+    private static final Logger LOGGER = Logger.getLogger(Deck.class.getName());
+
     private final List<Card> drawPile;
     private final List<Card> hand;
     private final List<Card> discardPile;
@@ -27,7 +30,7 @@ public class Deck {
                 drawPile.addAll(discardPile);
                 discardPile.clear();
                 Collections.shuffle(drawPile);
-                System.out.println("Il grimorio è stato rimescolato.");
+                LOGGER.info("Il grimorio è stato rimescolato.");
             }
             hand.add(drawPile.remove(0));
         }

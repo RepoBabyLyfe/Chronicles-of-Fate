@@ -73,7 +73,7 @@ public class Character implements Targetable {
         return this.currentFocus;
     }
 
-    //getter chill base gia sai amighe
+
 
     public String getName() {
         return name;

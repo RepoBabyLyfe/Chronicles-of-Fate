@@ -8,12 +8,15 @@ import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.logging.Logger;
 
 /**
  * Implementazione concreta del salvataggio tramite file JSON minimale e sicuro.
  * Supporta il flag hasCombatData per distinguere salvataggi dal combattimento vs profilo-only.
  */
 public class JsonGameStateRepository implements GameStateRepository {
+
+    private static final Logger LOGGER = Logger.getLogger(JsonGameStateRepository.class.getName());
 
     private final Path filePath;
 
@@ -33,7 +36,7 @@ public class JsonGameStateRepository implements GameStateRepository {
                 state.etherFragments(), cardsJson
         );
         Files.writeString(filePath, json);
-        System.out.println("Scrittura JSON completata in: " + filePath.toAbsolutePath());
+        LOGGER.info("Scrittura JSON completata in: " + filePath.toAbsolutePath());
     }
 
     @Override

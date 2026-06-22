@@ -1,9 +1,9 @@
 package it.unicam.cs.mpgc.rpg.matricola.domain;
 
-import it.unicam.cs.mpgc.rpg.matricola.application.events.LogEvent;
-import it.unicam.cs.mpgc.rpg.matricola.application.events.DamageTakenEvent;
-import it.unicam.cs.mpgc.rpg.matricola.application.events.EnemyCardPlayedEvent;
-
+/**
+ * Fase di fine turno: il Boss esegue la sua mossa tramite l'IA.
+ * Le notifiche verso l'esterno sono delegate al CombatManager tramite CombatEventListener.
+ */
 public class EndPhaseState implements TurnState {
 
     @Override
@@ -16,14 +16,15 @@ public class EndPhaseState implements TurnState {
 
             int dannoFatto = hpPrima - context.getPlayer().getCurrentHp();
 
-            context.publishEvent(new EnemyCardPlayedEvent(move.name(), move.logMessage(), move.imagePath()));
-            context.publishEvent(new LogEvent("[BOSS] " + move.logMessage()));
+            context.notifyEnemyCardPlayed(move.name(), move.logMessage(), move.imagePath());
+            context.notifyLog("[BOSS] " + move.logMessage());
 
             if (dannoFatto > 0) {
-                context.publishEvent(new DamageTakenEvent(context.getPlayer(), dannoFatto, false));
+                context.notifyDamageTaken(context.getPlayer(), dannoFatto, false);
             }
         }
-        context.nextPhase();
+        // RIMOSSO context.nextPhase() automatico. 
+        // Verrà chiamato dal Controller alla fine dell'animazione del Boss.
     }
 
     @Override

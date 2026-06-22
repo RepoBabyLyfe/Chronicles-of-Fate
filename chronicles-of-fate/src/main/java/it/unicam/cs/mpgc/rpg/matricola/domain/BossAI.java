@@ -8,6 +8,8 @@ import java.util.random.RandomGenerator;
 /**
  * Intelligenza Artificiale dei Boss generalizzata.
  * Carica il pool di azioni dall'archetipo specificato e le esegue con pesi bilanciati.
+ * Non contiene logica specifica per archetipo: tutti i parametri vengono letti dalla EnemyCard.
+ * Aggiungere un nuovo archetipo non richiede modifiche a questa classe (Open/Closed Principle).
  */
 public class BossAI {
 
@@ -58,81 +60,54 @@ public class BossAI {
             final EnemyCard card = cards.get(i);
             final int weight = weights[i];
 
-            BossActionStrategy strategy = createStrategy(card, archetype);
+            BossActionStrategy strategy = createStrategy(card);
             actionPool.add(new WeightedAction(weight, strategy, card));
         }
     }
 
-    private BossActionStrategy createStrategy(EnemyCard card, EnemyArchetype archetype) {
+    /**
+     * Crea la strategia di esecuzione basandosi solo sul tipo e sui valori della carta.
+     * Nessun switch per archetipo: i valori sono parametrizzati nella EnemyCard.
+     */
+    private BossActionStrategy createStrategy(EnemyCard card) {
         return switch (card.type()) {
             case ATTACK -> (boss, player, rnd) -> {
-                int damage = calculateAttackDamage(card, archetype, rnd);
-                player.takeDamage(damage);
+                player.takeDamage(card.primaryValue());
                 return new BossMove(card.name(),
-                        card.description().replace("danni casuali", damage + " danni"),
+                        card.description().replace("danni casuali", card.primaryValue() + " danni"),
                         card.imagePath(), card.type());
             };
             case DRAIN -> (boss, player, rnd) -> {
-                int[] values = calculateDrainValues(card, archetype, rnd);
-                player.takeDamage(values[0]);
-                boss.heal(values[1]);
+                player.takeDamage(card.primaryValue());
+                boss.heal(card.secondaryValue());
                 return new BossMove(card.name(), card.description(), card.imagePath(), card.type());
             };
             case DEBUFF -> (boss, player, rnd) -> {
-                int focusLost = Math.min(calculateDebuffValue(card, archetype), player.getCurrentFocus());
+                int focusLost = Math.min(card.primaryValue(), player.getCurrentFocus());
                 if (focusLost > 0) {
                     player.consumeFocus(focusLost);
                     return new BossMove(card.name(),
-                            card.description().replace("2 Focus", focusLost + " Focus")
-                                    .replace("3 Focus", focusLost + " Focus")
-                                    .replace("4 Focus", focusLost + " Focus"),
+                            card.description().replaceAll("\\d+ Focus", focusLost + " Focus"),
                             card.imagePath(), card.type());
                 } else {
-                    player.takeDamage(4);
+                    player.takeDamage(card.secondaryValue());
                     return new BossMove(card.name(),
-                            "Mente vuota... L'urto si riversa sul corpo: 4 danni!",
+                            "Mente vuota... L'urto si riversa sul corpo: " + card.secondaryValue() + " danni!",
                             card.imagePath(), EnemyCardType.ATTACK);
                 }
             };
             case SPECIAL -> (boss, player, rnd) -> {
-                int damage = calculateSpecialDamage(card, archetype, rnd);
+                int damage;
+                if (card.secondaryValue() > 0) {
+                    damage = rnd.nextInt(card.secondaryValue() - card.primaryValue() + 1) + card.primaryValue();
+                } else {
+                    damage = card.primaryValue();
+                }
                 player.takeDamage(damage);
                 return new BossMove(card.name(),
                         card.description().replace("danni casuali", damage + " danni"),
                         card.imagePath(), card.type());
             };
-        };
-    }
-
-    private int calculateAttackDamage(EnemyCard card, EnemyArchetype archetype, RandomGenerator rnd) {
-        return switch (archetype) {
-            case ENTROPY_AVATAR -> 6;
-            case VOID_SENTINEL -> card.name().contains("Raggio") ? 8 : 4;
-            case CHRONO_DEVOURER -> card.name().contains("Accelerazione") ? 6 : 5;
-        };
-    }
-
-    private int[] calculateDrainValues(EnemyCard card, EnemyArchetype archetype, RandomGenerator rnd) {
-        return switch (archetype) {
-            case ENTROPY_AVATAR -> new int[]{3, 3};
-            case VOID_SENTINEL -> card.name().contains("Barriera") ? new int[]{0, 5} : new int[]{4, 2};
-            case CHRONO_DEVOURER -> new int[]{0, 4};
-        };
-    }
-
-    private int calculateDebuffValue(EnemyCard card, EnemyArchetype archetype) {
-        return switch (archetype) {
-            case ENTROPY_AVATAR -> 2;
-            case VOID_SENTINEL -> 3;
-            case CHRONO_DEVOURER -> 4;
-        };
-    }
-
-    private int calculateSpecialDamage(EnemyCard card, EnemyArchetype archetype, RandomGenerator rnd) {
-        return switch (archetype) {
-            case ENTROPY_AVATAR -> card.name().contains("Collasso") ? 12 : rnd.nextInt(7) + 2;
-            case VOID_SENTINEL -> 15;
-            case CHRONO_DEVOURER -> 10;
         };
     }
 

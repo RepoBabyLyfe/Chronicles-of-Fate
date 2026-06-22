@@ -55,6 +55,7 @@ public class CombatController implements EventPublisher {
     @FXML
     private Label enemyOverlayText;
     @FXML private VBox pauseMenuOverlay;
+    @FXML private Label crystalCountLabel;
 
     private GameService gameService;
     private Character player;
@@ -95,16 +96,17 @@ public class CombatController implements EventPublisher {
         combatPresenter.updateUI();
 
         if (spaceCanvas != null && rootPane != null) {
-            rootPane.widthProperty().addListener((obs, oldVal, newVal) -> spaceCanvas.setWidth(newVal.doubleValue()));
-            rootPane.heightProperty().addListener((obs, oldVal, newVal) -> spaceCanvas.setHeight(newVal.doubleValue()));
-            spaceCanvas.setWidth(rootPane.getPrefWidth());
-            spaceCanvas.setHeight(rootPane.getPrefHeight());
-
-            this.spaceBackgroundEngine = new SpaceBackgroundEngine(spaceCanvas);
-            rootPane.setOnMouseMoved(e -> spaceBackgroundEngine.updateMouseCoordinates(e.getX(), e.getY()));
-            this.spaceBackgroundEngine.start();
+            this.spaceBackgroundEngine = SpaceBackgroundInitializer.setup(rootPane, spaceCanvas);
         }
         this.enemyCardAnimator = new EnemyCardAnimator(enemyCardOverlay, enemyCardImage, enemyOverlayText);
+
+        updateCrystalLabel();
+    }
+
+    private void updateCrystalLabel() {
+        if (crystalCountLabel != null && gameService != null && gameService.getPlayerProfile() != null) {
+            crystalCountLabel.setText(String.valueOf(gameService.getPlayerProfile().getEtherFragments()));
+        }
     }
 
     public void renderHand() {
@@ -279,10 +281,23 @@ public class CombatController implements EventPublisher {
             else if (damageEvent.target() == player) combatPresenter.playPlayerDamageAnimation();
         } else if (event instanceof EnemyCardPlayedEvent enemyEvent) {
             enemyCardAnimator.playAnimation(enemyEvent.cardName(), enemyEvent.imagePath(), () -> {
+                // IL TURNO DEL BOSS È VISIVAMENTE FINITO
+                // Ora possiamo avanzare di fase nel dominio, il che ripristinerà il Focus del nuovo turno.
+                if (gameService.getCombatManager() != null) {
+                    gameService.getCombatManager().nextPhase();
+                }
+
                 playerDeck.discardHand();
                 playerDeck.drawCards(3);
                 renderHand();
+                
+                // Aggiorniamo di nuovo la UI per mostrare il Focus ripristinato a inizio turno
+                if (playerFocusLabel != null) {
+                    playerFocusLabel.setText("Focus: " + player.getCurrentFocus());
+                }
                 combatPresenter.updateUI();
+                updateCrystalLabel();
+                
                 handleGameOverIfNeeded();
                 isAnimating = false;
             });

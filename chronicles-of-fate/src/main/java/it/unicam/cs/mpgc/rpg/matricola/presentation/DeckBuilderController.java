@@ -31,6 +31,7 @@ public class DeckBuilderController {
     @FXML private Label focusLabel;
     @FXML private Button confirmButton;
     @FXML private StackPane zoomOverlayPane;
+    @FXML private Label crystalCountLabel;
 
     private SpaceBackgroundEngine spaceBackgroundEngine;
     private final CardCatalog catalog = new CardCatalog();
@@ -45,14 +46,7 @@ public class DeckBuilderController {
         this.profile = SceneManager.getInstance().getGameService().getPlayerProfile();
 
         if (spaceCanvas != null && rootPane != null) {
-            rootPane.widthProperty().addListener((obs, oldVal, newVal) -> spaceCanvas.setWidth(newVal.doubleValue()));
-            rootPane.heightProperty().addListener((obs, oldVal, newVal) -> spaceCanvas.setHeight(newVal.doubleValue()));
-            spaceCanvas.setWidth(rootPane.getPrefWidth());
-            spaceCanvas.setHeight(rootPane.getPrefHeight());
-
-            this.spaceBackgroundEngine = new SpaceBackgroundEngine(spaceCanvas);
-            rootPane.setOnMouseMoved(e -> spaceBackgroundEngine.updateMouseCoordinates(e.getX(), e.getY()));
-            this.spaceBackgroundEngine.start();
+            this.spaceBackgroundEngine = SpaceBackgroundInitializer.setup(rootPane, spaceCanvas);
         }
 
         // Catalogo: click diretto per aggiungere al mazzo
@@ -116,6 +110,10 @@ public class DeckBuilderController {
         deckCountLabel.setText("IL TUO MAZZO (" + deckBuilder.getSelectedCards().size() + "/5)");
         focusLabel.setText("Costo Medio Focus: " + deckBuilder.getAverageFocusCost());
         confirmButton.setDisable(!deckBuilder.isComplete());
+
+        if (crystalCountLabel != null) {
+            crystalCountLabel.setText(String.valueOf(profile.getEtherFragments()));
+        }
     }
 
     @FXML

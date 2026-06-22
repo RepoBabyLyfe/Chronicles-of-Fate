@@ -3,6 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 
 <StackPane fx:id="rootPane" stylesheets="@style.css" prefWidth="1200" prefHeight="800" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicam.cs.mpgc.rpg.matricola.presentation.CombatController">
     <Canvas fx:id="spaceCanvas" mouseTransparent="true" StackPane.alignment="CENTER"/>
@@ -60,8 +61,17 @@
                 </center>
 
                 <right>
-                    <StackPane alignment="BOTTOM_RIGHT" BorderPane.alignment="BOTTOM_RIGHT" prefWidth="240">
-                        <VBox alignment="CENTER" spacing="12" styleClass="ps2-panel, player-stats-panel" maxHeight="-Infinity" maxWidth="220" translateY="-20">
+                    <VBox alignment="BOTTOM_RIGHT" spacing="15" BorderPane.alignment="BOTTOM_RIGHT" prefWidth="240" translateY="-20" translateX="-20">
+                        <HBox alignment="CENTER_RIGHT" spacing="10" styleClass="crystal-box" maxHeight="54" maxWidth="120">
+                            <ImageView fitWidth="48" fitHeight="48" preserveRatio="true">
+                                <image>
+                                    <Image url="@images/crystal_icon.png"/>
+                                </image>
+                            </ImageView>
+                            <Label fx:id="crystalCountLabel" text="0" styleClass="crystal-text"/>
+                        </HBox>
+
+                        <VBox alignment="CENTER" spacing="12" styleClass="ps2-panel, player-stats-panel" maxHeight="-Infinity" maxWidth="220">
                             <Label fx:id="playerFocusLabel" text="Focus: 10" styleClass="player-focus-text, combat-focus-text"/>
 
                             <VBox alignment="CENTER" spacing="6">
@@ -69,7 +79,7 @@
                                 <ProgressBar fx:id="playerHpBar" progress="1.0" prefWidth="190" styleClass="hp-bar"/>
                             </VBox>
                         </VBox>
-                    </StackPane>
+                    </VBox>
                 </right>
 
             </BorderPane>

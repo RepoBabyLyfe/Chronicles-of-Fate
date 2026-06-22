@@ -3,10 +3,12 @@ package it.unicam.cs.mpgc.rpg.matricola.presentation;
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.RadialGradient;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.Stop;
+import javafx.scene.effect.BlendMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,33 +17,48 @@ public class SpaceBackgroundEngine {
     private final Canvas canvas;
     private final GraphicsContext gc;
     private final List<Star> stars = new ArrayList<>();
-    private final List<AlienShip> ships = new ArrayList<>();
+    private final List<SpaceEntity> entities = new ArrayList<>();
+    private final List<NebulaCloud> nebulas = new ArrayList<>();
 
     private double mouseX = -1000;
     private double mouseY = -1000;
 
+    private final List<Image> asteroidImages = new ArrayList<>();
+
     public SpaceBackgroundEngine(Canvas canvas) {
         this.canvas = canvas;
         this.gc = canvas.getGraphicsContext2D();
+        loadAssets();
         generateUniverse();
     }
 
+    private void loadAssets() {
+        try {
+            asteroidImages.add(new Image(getClass().getResourceAsStream("/images/asteroid_sprite.png")));
+            asteroidImages.add(new Image(getClass().getResourceAsStream("/images/asteroid_2.png")));
+            asteroidImages.add(new Image(getClass().getResourceAsStream("/images/asteroid_3.png")));
+        } catch (Exception e) {
+            System.err.println("[WARN] Impossibile caricare alcuni sprite spaziali.");
+        }
+    }
+
     private void generateUniverse() {
-        // 200 stelle: densità ottimale per coprire fluidamente schermi dal 720p al 4K
         for (int i = 0; i < 200; i++) {
-            // Assegniamo coordinate in un universo "infinito" (non legate al canvas iniziale)
             double x = Math.random() * 5000;
             double y = Math.random() * 5000;
             double radius = Math.random() * 1.5 + 0.4;
             double opacity = Math.random() * 0.8 + 0.2;
             double twinkleSpeed = 0.004 + Math.random() * 0.012;
-            int layer = (int) (Math.random() * 3) + 1; // 1 = Lontano, 3 = Vicino
-
-            // Deriva cosmica indipendente
+            int layer = (int) (Math.random() * 3) + 1;
             double vx = (Math.random() - 0.5) * 0.18;
             double vy = (Math.random() - 0.4) * 0.12;
 
             stars.add(new Star(x, y, radius, opacity, twinkleSpeed, vx, vy, layer));
+        }
+
+        // Generazione Nebulose (Aurora Spaziale)
+        for (int i = 0; i < 5; i++) {
+            nebulas.add(new NebulaCloud());
         }
     }
 
@@ -63,34 +80,69 @@ public class SpaceBackgroundEngine {
         double w = canvas.getWidth();
         double h = canvas.getHeight();
 
-        if (w <= 0 || h <= 0) return;
+        if (w <= 0 || h <= 0)
+            return;
 
         // Disegno dello Sfondo Spaziale Radiale
         RadialGradient bgGradient = new RadialGradient(
                 0, 0, w / 2, h / 2, Math.max(w, h) * 0.75, false, CycleMethod.NO_CYCLE,
                 new Stop(0, Color.web("#150928")),
-                new Stop(1, Color.web("#030305"))
-        );
+                new Stop(1, Color.web("#030305")));
         gc.setFill(bgGradient);
         gc.fillRect(0, 0, w, h);
 
-        // 1. AGGIORNAMENTO E PROIEZIONE STELLE
+        // 0. NEBULOSE (Aurora Boreale Spaziale)
+        gc.setGlobalBlendMode(BlendMode.SCREEN);
+        for (NebulaCloud neb : nebulas) {
+            neb.x += neb.vx;
+            neb.y += neb.vy;
+            neb.phase += neb.pulseSpeed;
+
+            double currentOpacity = neb.baseOpacity + Math.sin(neb.phase) * 0.05;
+            if (currentOpacity < 0)
+                currentOpacity = 0.02;
+
+            double viewX = ((neb.x % (w + 1200)) + (w + 1200)) % (w + 1200) - 600;
+            double viewY = ((neb.y % (h + 1200)) + (h + 1200)) % (h + 1200) - 600;
+
+            // Effetto Parallasse anche per le nebulose
+            double offsetX = 0;
+            double offsetY = 0;
+            if (mouseX > 0 && mouseY > 0) {
+                offsetX = (mouseX - w / 2) * 0.005; // Molto lontane, parallasse leggero
+                offsetY = (mouseY - h / 2) * 0.005;
+            }
+
+            double drawX = viewX + offsetX;
+            double drawY = viewY + offsetY;
+
+            RadialGradient nebGlow = new RadialGradient(
+                    0, 0, drawX, drawY, neb.radius, false, CycleMethod.NO_CYCLE,
+                    new Stop(0, Color.color(neb.r, neb.g, neb.b, currentOpacity)),
+                    new Stop(1, Color.TRANSPARENT));
+            gc.setFill(nebGlow);
+            gc.fillOval(drawX - neb.radius, drawY - neb.radius, neb.radius * 2, neb.radius * 2);
+        }
+        gc.setGlobalBlendMode(BlendMode.SRC_OVER);
+
+        // 1. STELLE
         for (Star star : stars) {
-            // Stato Dominio: La stella viaggia all'infinito (non viene MAI intrappolata)
             star.x += star.vx;
             star.y += star.vy;
 
-            // Twinkling sicuro
             star.opacity += star.twinkleSpeed * star.direction;
-            if (star.opacity >= 1.0) { star.opacity = 1.0; star.direction = -1; }
-            if (star.opacity <= 0.15) { star.opacity = 0.15; star.direction = 1; }
+            if (star.opacity >= 1.0) {
+                star.opacity = 1.0;
+                star.direction = -1;
+            }
+            if (star.opacity <= 0.15) {
+                star.opacity = 0.15;
+                star.direction = 1;
+            }
 
-            // Proiezione Vista: Calcoliamo la posizione a schermo dinamicamente usando il Modulo Matematico
-            // Questo assicura che le stelle avvolgano lo schermo a prescindere dalle sue dimensioni attuali
             double viewX = ((star.x % w) + w) % w;
             double viewY = ((star.y % h) + h) % h;
 
-            // Parallasse e Interazione Cinetica applicate sulle coordinate proiettate
             double offsetX = 0;
             double offsetY = 0;
 
@@ -106,7 +158,6 @@ public class SpaceBackgroundEngine {
                 }
             }
 
-            // Riapplichiamo il Modulo nel caso l'interazione le abbia spinte oltre il bordo
             double drawX = ((viewX + offsetX) % w + w) % w;
             double drawY = ((viewY + offsetY) % h + h) % h;
             double safeOpacity = Math.max(0.0, Math.min(1.0, star.opacity));
@@ -121,30 +172,42 @@ public class SpaceBackgroundEngine {
             gc.fillOval(drawX, drawY, star.radius * 2, star.radius * 2);
         }
 
-        // 2. ASTRONAVI ALIENI BIOLUMINESCENTI (Indipendenti dalla griglia)
-        if (Math.random() < 0.002 && ships.size() < 2) {
-            ships.add(new AlienShip(w, h));
+        // 2. SPAWN DINAMICO (Variegato e controllato)
+        if (Math.random() < 0.005 && entities.size() < 3 && !asteroidImages.isEmpty()) {
+            Image randomAsteroid = asteroidImages.get((int) (Math.random() * asteroidImages.size()));
+            entities.add(new SpaceEntity(w, h, randomAsteroid));
         }
 
-        for (int i = ships.size() - 1; i >= 0; i--) {
-            AlienShip ship = ships.get(i);
-            ship.x += ship.speedX;
-            ship.y += ship.speedY;
+        // 3. RENDER ENTITA'
+        gc.setGlobalBlendMode(BlendMode.ADD);
 
-            RadialGradient glow = new RadialGradient(0, 0, ship.x, ship.y, 14, false, CycleMethod.NO_CYCLE,
-                    new Stop(0, Color.web("#ff0055", 0.45)),
-                    new Stop(1, Color.TRANSPARENT));
-            gc.setFill(glow);
-            gc.fillOval(ship.x - 14, ship.y - 14, 28, 28);
+        for (int i = entities.size() - 1; i >= 0; i--) {
+            SpaceEntity entity = entities.get(i);
+            entity.x += entity.speedX;
+            entity.y += entity.speedY;
+            entity.rotation += entity.rotationSpeed;
 
-            gc.setFill(Color.web("#ffffff", 0.85));
-            gc.fillOval(ship.x - 1.5, ship.y - 1.5, 3, 3);
+            if (entity.image != null) {
+                gc.save();
+                gc.translate(entity.x, entity.y);
 
-            if (ship.x > w + 40 || ship.x < -40 || ship.y > h + 40 || ship.y < -40) {
-                ships.remove(i);
+                gc.rotate(entity.rotation);
+
+                double wImg = entity.size;
+                double hImg = entity.size;
+                gc.drawImage(entity.image, -wImg / 2, -hImg / 2, wImg, hImg);
+                gc.restore();
+            }
+
+            if (entity.x > w + 200 || entity.x < -200 || entity.y > h + 200 || entity.y < -200) {
+                entities.remove(i);
             }
         }
+
+        gc.setGlobalBlendMode(BlendMode.SRC_OVER);
     }
+
+
 
     private static class Star {
         double x, y, radius, opacity, twinkleSpeed, vx, vy;
@@ -152,20 +215,68 @@ public class SpaceBackgroundEngine {
         int direction = 1;
 
         Star(double x, double y, double radius, double opacity, double twinkleSpeed, double vx, double vy, int layer) {
-            this.x = x; this.y = y; this.radius = radius; this.opacity = opacity;
-            this.twinkleSpeed = twinkleSpeed; this.vx = vx; this.vy = vy; this.layer = layer;
+            this.x = x;
+            this.y = y;
+            this.radius = radius;
+            this.opacity = opacity;
+            this.twinkleSpeed = twinkleSpeed;
+            this.vx = vx;
+            this.vy = vy;
+            this.layer = layer;
         }
     }
 
-    private static class AlienShip {
-        double x, y, speedX, speedY;
 
-        AlienShip(double canvasWidth, double canvasHeight) {
+
+    private static class SpaceEntity {
+        double x, y, speedX, speedY, rotation, rotationSpeed, size;
+        Image image;
+
+        SpaceEntity(double canvasWidth, double canvasHeight, Image image) {
+            this.image = image;
             boolean fromLeft = Math.random() > 0.5;
-            this.x = fromLeft ? -30 : canvasWidth + 30;
-            this.y = 80 + Math.random() * (canvasHeight - 160);
-            this.speedX = fromLeft ? (0.6 + Math.random() * 1.1) : -(0.6 + Math.random() * 1.1);
-            this.speedY = (Math.random() - 0.5) * 0.15;
+            this.rotation = Math.random() * 360;
+
+            // Gli asteroidi continuano a fluttuare orizzontalmente/diagonalmente
+            this.x = fromLeft ? -150 : canvasWidth + 150;
+            this.y = 50 + Math.random() * (canvasHeight - 100);
+            this.speedX = fromLeft ? (0.3 + Math.random() * 0.7) : -(0.3 + Math.random() * 0.7);
+            this.speedY = (Math.random() - 0.5) * 1.5;
+            this.size = 50 + Math.random() * 120;
+            this.rotationSpeed = (Math.random() - 0.5) * 1.5;
+        }
+    }
+
+    private static class NebulaCloud {
+        double x, y, radius, vx, vy, phase, pulseSpeed, baseOpacity;
+        double r, g, b;
+
+        NebulaCloud() {
+            this.x = Math.random() * 5000;
+            this.y = Math.random() * 5000;
+            this.radius = 400 + Math.random() * 800; // Ancora più grandi e morbide
+            this.vx = (Math.random() - 0.5) * 1.5; // Molto più veloci, fluttuano attivamente
+            this.vy = (Math.random() - 0.5) * 1.5;
+            this.phase = Math.random() * Math.PI * 2;
+            this.pulseSpeed = 0.005 + Math.random() * 0.01;
+            this.baseOpacity = 0.06 + Math.random() * 0.08;
+
+            int colorType = (int) (Math.random() * 3);
+            if (colorType == 0) {
+                r = 0.0;
+                g = 0.9;
+                b = 1.0;
+            } // Ciano
+            else if (colorType == 1) {
+                r = 0.7;
+                g = 0.2;
+                b = 1.0;
+            } // Viola
+            else {
+                r = 0.0;
+                g = 1.0;
+                b = 0.5;
+            } // Verde Aurora
         }
     }
 }

@@ -1,20 +1,21 @@
 package it.unicam.cs.mpgc.rpg.matricola.application;
 
-import it.unicam.cs.mpgc.rpg.matricola.application.events.EventPublisher;
-import it.unicam.cs.mpgc.rpg.matricola.application.events.HpChangedEvent;
+import it.unicam.cs.mpgc.rpg.matricola.application.events.*;
 import it.unicam.cs.mpgc.rpg.matricola.domain.*;
 import it.unicam.cs.mpgc.rpg.matricola.domain.Character;
-import it.unicam.cs.mpgc.rpg.matricola.domain.CombatResult;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * Orchestratore dell'Application Layer. Gestisce il flusso principale
  * nascondendo la complessità del Dominio alla futura Interfaccia Grafica.
  */
 public class GameService {
+
+    private static final Logger LOGGER = Logger.getLogger(GameService.class.getName());
 
     private static final Set<String> BASE_CARDS = Set.of(
             "Risonanza Eterea", "Fenditura Quantica",
@@ -33,8 +34,30 @@ public class GameService {
         this.repository = repository;
         this.eventPublisher = eventPublisher;
 
-        // Carichiamo il profilo dal salvataggio se esiste, altrimenti profilo base
         this.playerProfile = loadProfileFromSave();
+    }
+
+    /**
+     * Adapter che traduce le notifiche del dominio in eventi dell'application layer.
+     * Questo permette al CombatManager di restare nel domain senza dipendere dagli eventi.
+     */
+    private CombatEventListener createEventAdapter() {
+        return new CombatEventListener() {
+            @Override
+            public void onEnemyCardPlayed(String cardName, String logMessage, String imagePath) {
+                eventPublisher.publish(new EnemyCardPlayedEvent(cardName, logMessage, imagePath));
+            }
+
+            @Override
+            public void onLogMessage(String message) {
+                eventPublisher.publish(new LogEvent(message));
+            }
+
+            @Override
+            public void onDamageTaken(Character target, int damageAmount, boolean isCritical) {
+                eventPublisher.publish(new DamageTakenEvent(target, damageAmount, isCritical));
+            }
+        };
     }
 
     /**
@@ -45,12 +68,12 @@ public class GameService {
         try {
             if (repository.saveExists()) {
                 GameState state = repository.load();
-                System.out.println("Profilo caricato dal salvataggio: Frammenti("
+                LOGGER.info("Profilo caricato dal salvataggio: Frammenti("
                         + state.etherFragments() + "), Carte(" + state.unlockedCards().size() + ")");
                 return new PlayerProfile(state.etherFragments(), state.unlockedCards());
             }
         } catch (Exception e) {
-            System.err.println("Errore nel caricamento del profilo: " + e.getMessage()
+            LOGGER.warning("Errore nel caricamento del profilo: " + e.getMessage()
                     + " — Utilizzo profilo base.");
         }
         return new PlayerProfile(0, BASE_CARDS);
@@ -60,9 +83,9 @@ public class GameService {
      * Inizializza una nuova partita da zero.
      */
     public void startNewGame(Character player, Character enemy) {
-        this.combatManager = new CombatManager(player, enemy, this.eventPublisher);
+        this.combatManager = new CombatManager(player, enemy, createEventAdapter());
         this.combatManager.startCombat();
-        System.out.println("Nuova partita avviata!");
+        LOGGER.info("Nuova partita avviata!");
 
         eventPublisher.publish(new HpChangedEvent(player, player.getCurrentHp(), player.getMaxHp()));
         eventPublisher.publish(new HpChangedEvent(enemy, enemy.getCurrentHp(), enemy.getMaxHp()));
@@ -103,11 +126,11 @@ public class GameService {
     private void persistState(GameState state) {
         try {
             repository.save(state);
-            System.out.println("Salvataggio completato: Frammenti("
+            LOGGER.info("Salvataggio completato: Frammenti("
                     + playerProfile.getEtherFragments() + "), Carte("
                     + playerProfile.getUnlockedCards().size() + ")");
         } catch (Exception e) {
-            System.err.println("Errore durante il salvataggio: " + e.getMessage());
+            LOGGER.warning("Errore durante il salvataggio: " + e.getMessage());
         }
     }
 
@@ -119,10 +142,8 @@ public class GameService {
         try {
             GameState state = repository.load();
 
-            // 1. Ripristiniamo sempre il Profilo del Giocatore
             this.playerProfile = new PlayerProfile(state.etherFragments(), state.unlockedCards());
 
-            // 2. Ripristiniamo il Combattimento solo se i dati sono validi
             if (state.hasCombatData()) {
                 int playerDamageToApply = playerBase.getMaxHp() - state.playerHp();
                 if (playerDamageToApply > 0) playerBase.takeDamage(playerDamageToApply);
@@ -134,15 +155,14 @@ public class GameService {
                 if (enemyDamageToApply > 0) enemyBase.takeDamage(enemyDamageToApply);
             }
 
-            // 3. Riavvio Motore
-            this.combatManager = new CombatManager(playerBase, enemyBase, this.eventPublisher);
+            this.combatManager = new CombatManager(playerBase, enemyBase, createEventAdapter());
             this.combatManager.startCombat();
 
             eventPublisher.publish(new HpChangedEvent(playerBase, playerBase.getCurrentHp(), playerBase.getMaxHp()));
             eventPublisher.publish(new HpChangedEvent(enemyBase, enemyBase.getCurrentHp(), enemyBase.getMaxHp()));
 
         } catch (Exception e) {
-            System.err.println("Errore durante il caricamento: " + e.getMessage());
+            LOGGER.warning("Errore durante il caricamento: " + e.getMessage());
         }
     }
 

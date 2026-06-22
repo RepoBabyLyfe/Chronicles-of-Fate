@@ -13,19 +13,19 @@ import javafx.scene.layout.StackPane;
 public class MenuController {
     @FXML private StackPane rootPane;
     @FXML private Canvas spaceCanvas;
+    @FXML private javafx.scene.control.Label crystalCountLabel;
+
     private SpaceBackgroundEngine spaceBackgroundEngine;
 
     @FXML
     public void initialize() {
         if (spaceCanvas != null && rootPane != null) {
-            rootPane.widthProperty().addListener((obs, oldVal, newVal) -> spaceCanvas.setWidth(newVal.doubleValue()));
-            rootPane.heightProperty().addListener((obs, oldVal, newVal) -> spaceCanvas.setHeight(newVal.doubleValue()));
-            spaceCanvas.setWidth(rootPane.getPrefWidth());
-            spaceCanvas.setHeight(rootPane.getPrefHeight());
-
-            this.spaceBackgroundEngine = new SpaceBackgroundEngine(spaceCanvas);
-            rootPane.setOnMouseMoved(e -> spaceBackgroundEngine.updateMouseCoordinates(e.getX(), e.getY()));
-            this.spaceBackgroundEngine.start();
+            this.spaceBackgroundEngine = SpaceBackgroundInitializer.setup(rootPane, spaceCanvas);
+        }
+        
+        GameService service = SceneManager.getInstance().getGameService();
+        if (service != null && service.getPlayerProfile() != null && crystalCountLabel != null) {
+            crystalCountLabel.setText(String.valueOf(service.getPlayerProfile().getEtherFragments()));
         }
     }
 

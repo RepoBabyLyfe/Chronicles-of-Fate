@@ -1,10 +1,13 @@
 package it.unicam.cs.mpgc.rpg.matricola.domain;
 
+import java.util.logging.Logger;
+
 public class ActionPhaseState implements TurnState {
+    private static final Logger LOGGER = Logger.getLogger(ActionPhaseState.class.getName());
 
     @Override
     public void onEnter(CombatManager context) {
-        System.out.println("[FASE DI AZIONE] In attesa delle mosse del giocatore...");
+        LOGGER.info("[FASE DI AZIONE] In attesa delle mosse del giocatore...");
     }
 
     @Override
@@ -13,7 +16,7 @@ public class ActionPhaseState implements TurnState {
 
         // 1. Controllo Focus
         if (!player.consumeFocus(card.getManaCost())) {
-            System.out.println("Focus insufficiente per giocare " + card.getName());
+            LOGGER.warning("Focus insufficiente per giocare " + card.getName());
             return false;
         }
 
@@ -23,10 +26,10 @@ public class ActionPhaseState implements TurnState {
         if (card.requiresDice()) {
             esitoDado = card.getRequiredDice().roll();
             context.setLastDiceRoll(esitoDado.value());
-            System.out.println("Giocata: [" + card.getName() + "] -> Dado: " + esitoDado.value());
+            LOGGER.info("Giocata: [" + card.getName() + "] -> Dado: " + esitoDado.value());
         } else {
             context.setLastDiceRoll(0); // Flag per indicare assenza di lancio
-            System.out.println("Giocata: [" + card.getName() + "] -> Effetto Istantaneo!");
+            LOGGER.info("Giocata: [" + card.getName() + "] -> Effetto Istantaneo!");
         }
 
         // RIGA CORRETTA: Passiamo player (sorgente), target (bersaglio) ed esitoDado

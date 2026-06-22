@@ -11,13 +11,21 @@ repositories {
     mavenCentral()
 }
 
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+}
+
+test {
+    useJUnitPlatform()
+}
+
 javafx {
     version = "21" // Usa la versione di Java che hai installata (es. 17 o 21)
     modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
 
 application {
-    // Questo è il percorso della classe che creeremo tra poco per avviare il gioco
+    //percorso della classe per avviare il gioco
     mainClass = 'it.unicam.cs.mpgc.rpg.matricola.infrastructure.AppLauncher'
 }
 

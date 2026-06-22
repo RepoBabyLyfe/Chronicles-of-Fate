@@ -4,11 +4,14 @@ import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import java.util.logging.Logger;
 
 /**
  * Gestisce i log di sistema, la messaggistica a schermo e i pop-up modali.
  */
 public class UINotificationManager {
+    private static final Logger LOGGER = Logger.getLogger(UINotificationManager.class.getName());
+
     private final Label systemLogLabel;
 
     public UINotificationManager(Label systemLogLabel) {
@@ -19,7 +22,7 @@ public class UINotificationManager {
         if (systemLogLabel != null) {
             Platform.runLater(() -> systemLogLabel.setText(message));
         }
-        System.out.println("[GUI LOG] " + message);
+        LOGGER.info("[GUI LOG] " + message);
     }
 
     public void showGameOverPopup(String title, String message, Alert.AlertType alertType) {

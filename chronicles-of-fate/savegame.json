@@ -1,5 +1,8 @@
 {
-  "playerHp": 30,
-  "playerFocus": 5,
-  "enemyHp": 35
+  "hasCombatData": false,
+  "playerHp": 0,
+  "playerFocus": 0,
+  "enemyHp": 0,
+  "etherFragments": 50,
+  "unlockedCards": ["Risonanza Eterea", "Egida del Vuoto", "Supernova Tascabile", "Sovraccarico Biologico", "Innesto Simbiotico", "Assimilazione Oscura", "Fenditura Quantica"]
 }

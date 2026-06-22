@@ -15,35 +15,36 @@ import javafx.util.Duration;
 
 /**
  * Controller della schermata di fine combattimento.
- * Mostra l'esito (vittoria/sconfitta), i frammenti guadagnati e le opzioni di navigazione.
+ * Mostra l'esito (vittoria/sconfitta), i frammenti guadagnati e le opzioni di
+ * navigazione.
  */
 public class VictoryController {
 
-    @FXML private StackPane rootPane;
-    @FXML private Canvas spaceCanvas;
-    @FXML private Label outcomeTitle;
-    @FXML private Label outcomeSubtitle;
-    @FXML private Label fragmentsLabel;
-    @FXML private VBox rewardsBox;
-    @FXML private VBox buttonsBox;
+    @FXML
+    private StackPane rootPane;
+    @FXML
+    private Canvas spaceCanvas;
+    @FXML
+    private Label outcomeTitle;
+    @FXML
+    private Label outcomeSubtitle;
+    @FXML
+    private Label fragmentsLabel;
+    @FXML
+    private VBox rewardsBox;
+    @FXML
+    private VBox buttonsBox;
 
     private SpaceBackgroundEngine spaceBackgroundEngine;
 
     @FXML
     public void initialize() {
-        // Sfondo spaziale
+        // sfondo spaziale
         if (spaceCanvas != null && rootPane != null) {
-            rootPane.widthProperty().addListener((obs, oldVal, newVal) -> spaceCanvas.setWidth(newVal.doubleValue()));
-            rootPane.heightProperty().addListener((obs, oldVal, newVal) -> spaceCanvas.setHeight(newVal.doubleValue()));
-            spaceCanvas.setWidth(rootPane.getPrefWidth());
-            spaceCanvas.setHeight(rootPane.getPrefHeight());
-
-            this.spaceBackgroundEngine = new SpaceBackgroundEngine(spaceCanvas);
-            rootPane.setOnMouseMoved(e -> spaceBackgroundEngine.updateMouseCoordinates(e.getX(), e.getY()));
-            this.spaceBackgroundEngine.start();
+            this.spaceBackgroundEngine = SpaceBackgroundInitializer.setup(rootPane, spaceCanvas);
         }
 
-        // Recuperiamo il risultato dal GameService
+        // eecupero il risultato dal GameService
         CombatResult result = SceneManager.getInstance().getGameService().getLastCombatResult();
         if (result != null) {
             displayResult(result);
@@ -56,7 +57,8 @@ public class VictoryController {
         if (result.isVictory()) {
             outcomeTitle.setText("VITTORIA SUPREMA");
             outcomeTitle.getStyleClass().add("victory-title");
-            outcomeSubtitle.setText("L'Avatar dell'Entropia è stato annientato.\nL'ordine cosmico è stato ripristinato.");
+            outcomeSubtitle
+                    .setText("L'Avatar dell'Entropia è stato annientato.\nL'ordine cosmico è stato ripristinato.");
             fragmentsLabel.setText("+ " + result.fragmentsEarned() + " Frammenti di Etere ✨");
         } else {
             outcomeTitle.setText("SCONFITTA");
@@ -68,29 +70,24 @@ public class VictoryController {
     }
 
     private void playEntryAnimation() {
-        // Fade in del titolo
         FadeTransition titleFade = new FadeTransition(Duration.millis(800), outcomeTitle);
         titleFade.setFromValue(0);
         titleFade.setToValue(1);
 
-        // Scale del titolo
         ScaleTransition titleScale = new ScaleTransition(Duration.millis(600), outcomeTitle);
         titleScale.setFromX(0.5);
         titleScale.setFromY(0.5);
         titleScale.setToX(1.0);
         titleScale.setToY(1.0);
 
-        // Fade in rewards
         FadeTransition rewardsFade = new FadeTransition(Duration.millis(600), rewardsBox);
         rewardsFade.setFromValue(0);
         rewardsFade.setToValue(1);
 
-        // Fade in buttons
         FadeTransition buttonsFade = new FadeTransition(Duration.millis(400), buttonsBox);
         buttonsFade.setFromValue(0);
         buttonsFade.setToValue(1);
 
-        // Setup iniziale
         outcomeTitle.setOpacity(0);
         rewardsBox.setOpacity(0);
         buttonsBox.setOpacity(0);
