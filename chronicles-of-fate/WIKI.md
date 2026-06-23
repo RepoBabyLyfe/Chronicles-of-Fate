@@ -166,8 +166,8 @@ La persistenza è basata su **Gson (Google JSON)** per la sua facilità di parsi
 2. **Il Salvataggio (`savegame.json`):**
    Rappresenta il *Record* `GameState` serializzato in modo rigoroso.
    A differenza di un salvataggio basilare, non memorizza solo il `PlayerProfile` (collezione e frammenti), ma cattura dinamicamente l'esatto stato di un combattimento in corso (HP e Focus attuali di giocatore e nemico). In questo modo, qualora il gioco venga interrotto a metà battaglia, il `GameService` ripristinerà perfettamente lo scontro in atto dal punto esatto. Gson gestisce autonomamente liste e tipi base.
-   > [!WARNING]
-   > La manomissione manuale del file `savegame.json` da parte dell'utente finale può causare la corruzione della struttura dati in fase di deserializzazione, compromettendo irrimediabilmente i progressi di gioco.
+   >[!WARNING]
+>La manomissione manuale del file `savegame.json` da parte dell'utente finale può causare la corruzione della struttura dati in fase di deserializzazione, compromettendo irrimediabilmente i progressi di gioco.
 
 ---
 
