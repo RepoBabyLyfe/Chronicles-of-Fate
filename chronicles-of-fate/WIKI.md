@@ -64,11 +64,17 @@ L'ingegneria del software di questo gioco fa uso di Design Pattern per risolvere
 - **Perché è stato usato:** Per delegare e centralizzare la complessa logica di istanziazione dei nemici. In base al parametro `defeatedBosses`, la Factory decide quale archetipo di Boss istanziare, liberando il `GameService` da pesanti switch-case di configurazione.
 
 ### 2.8 Principi S.O.L.I.D.
-- **(S) Single Responsibility Principle (SRP):** Per evitare che la classe `GameService` diventasse una *God Class*, le sue responsabilità sono state divise in due moduli focalizzati: `CombatOrchestrator` (gestione battaglie) e `ProfileManager` (gestione inventario). `GameService` rimane un puro *Facade*.
-- **(O) Open/Closed Principle (OCP):** Il sistema è aperto all'estensione ma chiuso alle modifiche. È progettato per accogliere nuovi elementi (come tipologie di carte, nemici o persino fasi del turno) estendendo le configurazioni dati esterne o aggiungendo nuove implementazioni delle interfacce base, senza mai intaccare il codice core esistente.
-- **(L) Liskov Substitution Principle (LSP):** Qualsiasi implementazione concreta di un'astrazione può essere sostituita senza alterare la correttezza del programma. Ad esempio, il `CombatManager` accetta qualsiasi `TurnState` o `Rollable`. È possibile iniettare un "Dado a 20 facce" e il sistema continuerà a funzionare garantendo la medesima coerenza matematica.
-- **(I) Interface Segregation Principle (ISP):** La precedente interfaccia monolitica `IEnemyAI` costringeva le classi a dipendere sia dalla logica comportamentale (`takeTurn`) sia dalla lettura passiva del mazzo nemico (`getCardPool`, `getArchetype`). È stata chirurgicamente divisa in due interfacce minimali e specifiche: `IEnemyAI` per l'intelligenza tattica, ed `EnemyDeckInfo` per l'interrogazione dei dati.
-- **(D) Dependency Inversion Principle (DIP):** Prima l'accesso al catalogo carte dipendeva dall'istanziazione diretta di `JsonCardCatalog` in giro per i Controller. Ora il livello `domain` espone un'astratta interfaccia `CardCatalog`, l'implementazione concreta `JsonCardCatalog` è scesa nel livello `persistence`, e viene iniettata tramite costruttore per disaccoppiare totalmente il codice applicativo dalla tecnologia JSON o Gson.
+La robustezza del sistema è garantita anche dalla stretta aderenza ai principi SOLID:
+
+**Single Responsibility Principle (SRP):** Per evitare che la classe `GameService` si trasformasse in un anti-pattern (God Class), le sue responsabilità operative sono state divise in due moduli focalizzati: il `CombatOrchestrator` per la gestione delle battaglie e il `ProfileManager` per la gestione dell'inventario. Il `GameService` rimane così un puro Facade.
+
+**Open/Closed Principle (OCP):** Il sistema è progettato per essere aperto all'estensione ma chiuso alle modifiche. Nuovi elementi, come tipologie di carte, nemici o persino fasi del turno, possono essere introdotti estendendo le configurazioni esterne o implementando nuove interfacce base, senza mai intaccare il codice core esistente.
+
+**Liskov Substitution Principle (LSP):** Qualsiasi implementazione concreta di un'astrazione può essere sostituita senza alterare la correttezza del programma. Il `CombatManager`, ad esempio, accetta qualsiasi istanza di `TurnState` o `Rollable`, garantendo la medesima coerenza matematica anche con dadi non standard.
+
+**Interface Segregation Principle (ISP):** La monolitica interfaccia `IEnemyAI` costringeva le classi a dipendere sia dalla logica comportamentale sia dalla lettura passiva del mazzo nemico. È stata perciò suddivisa in due interfacce minimali e specifiche: `IEnemyAI` per l'intelligenza tattica attiva ed `EnemyDeckInfo` per l'interrogazione dei dati.
+
+**Dependency Inversion Principle (DIP):** L'accesso al catalogo carte dipendeva inizialmente dall'istanziazione diretta di `JsonCardCatalog` sparpagliata nei vari Controller. Ora il livello domain espone un'astratta interfaccia `CardCatalog`, mentre la sua implementazione concreta risiede nel livello persistence e viene iniettata tramite costruttore, disaccoppiando totalmente il codice applicativo dalla tecnologia JSON.
 
 ---
 
