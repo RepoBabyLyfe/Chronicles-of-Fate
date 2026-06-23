@@ -198,8 +198,8 @@ Tutte le interazioni si basano su un set predefinito di Carte archiviate nel fil
 - **Risonanza Eterea (Costo 1 Focus):** `RESTORE_FOCUS`. Nessun danno applicato. Rigenera immediatamente 1 punto Focus al giocatore, permettendo di estendere le sequenze del turno.
 - **Fenditura Quantica (Costo 2 Focus):** `DAMAGE`. Attacco standard. Il bersaglio subisce danni pari al risultato del lancio del D6, a cui si sommano 3 punti di danno base fisso.
 - **Sovraccarico Biologico (Costo 4 Focus):** `DAMAGE_AND_SELF_DAMAGE`. Carta ad alto impatto tattico. Infligge al bersaglio l'esito del D6 incrementato di 2 danni base, ma genera un contraccolpo che infligge 2 danni all'AURA del giocatore stesso. Richiede una gestione oculata.
-  > [!CAUTION]
-  > L'utilizzo indiscriminato del Sovraccarico Biologico in condizioni di salute critica può provocare l'azzeramento volontario degli HP del giocatore, portando all'immediata sconfitta.
+>[!CAUTION]
+>L'utilizzo indiscriminato del Sovraccarico Biologico in condizioni di salute critica può provocare l'azzeramento volontario degli HP del giocatore, portando all'immediata sconfitta.
 - **Innesto Simbiotico (Costo 3 Focus):** `HEAL`. Effetto curativo. Ripristina l'AURA del giocatore di una quantità pari all'esito del D6 incrementato di 1. Fondamentale per il sostentamento prolungato.
 - **Assimilazione Oscura (Costo 0 Focus):** `SELF_DAMAGE_AND_FOCUS`. Carta di sacrificio strategico. Non consuma Focus e non prevede il lancio dei dadi. Il giocatore subisce deliberatamente 3 danni fissi all'AURA per ottenere una ricarica istantanea di 4 punti Focus. Essenziale per le strategie di chiusura rapida del turno (OTK).
 - **Egida del Vuoto (Acquistabile nello Shop - 50 Etere, Costo 2 Focus):** `HEAL`. Cura l'AURA di 3 punti fissi sommati all'esito del D6.
