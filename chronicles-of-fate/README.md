@@ -27,7 +27,7 @@ gradlew.bat run
 ./gradlew run
 ```
 
-> **Documentazione Tecnica:** Per leggere la documentazione tecnica completa sull'architettura (Clean Architecture, Dependency Rule) e le approfondite implementazioni dei Design Pattern (Facade, Observer, State Pattern, ecc...), ti invitiamo a leggere l'ampio file **[WIKI.md](WIKI.md)** incluso in questo repository.
+>  Per leggere la documentazione tecnica completa sull'architettura e le approfondite implementazioni dei Design Pattern, ti invitiamo a leggere il file **[WIKI.md](WIKI.md)** incluso in questo repository.
 
 ---
 
