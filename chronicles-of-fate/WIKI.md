@@ -84,49 +84,38 @@ Analizziamo ora il ruolo di ogni classe, come comunica e di chi è responsabile.
 
 ### 3.1 Layer `domain`
 
-- **`Character`**
-  - **Responsabilità:** Entità base. Custodisce lo stato vitale (AURA/HP) del giocatore o dei Boss nemici. Include regole di validazione per impedire che gli HP scendano sotto lo 0 o superino il cap massimo.
-  - **Comunicazione:** Puramente passiva. Riceve comandi da `CombatManager` (come `takeDamage(int)`).
+**`Character`**
+Rappresenta l'entità base di gioco. Custodisce lo stato vitale (AURA/HP) del giocatore o dei Boss nemici. Include inoltre le regole di validazione per impedire che gli HP scendano sotto lo zero o superino il limite massimo consentito. La sua comunicazione è puramente passiva: si limita a ricevere comandi dal `CombatManager`, come ad esempio l'assegnazione dei danni (come `takeDamage(int)`).
 
-- **`CardCatalog` (Interfaccia)**
-  - **Responsabilità:** Applicazione del *Dependency Inversion Principle*. Definisce il contratto puramente astratto per il recupero della collezione delle carte, blindando il Dominio e l'Application dai dettagli infrastrutturali di come vengono effettivamente reperite (su file system, su database o hard-coded).
+**`CardCatalog` (Interfaccia)**
+Costituisce l'applicazione diretta del Dependency Inversion Principle. Definisce il contratto puramente astratto per il recupero della collezione delle carte, blindando il Dominio e l'Application dai dettagli infrastrutturali di come queste informazioni vengano effettivamente reperite.
 
-- **`Card` e `CardEffect`**
-  - **Responsabilità:** Implementazione di un approccio *Data-Driven*. Le carte non sono decine di sottoclassi diverse (es. non esiste una `DamageCard`), ma un'unica classe `Card` popolata da JSON. Il suo comportamento è dettato da un enum `EffectType` (`DAMAGE`, `HEAL`, `RESTORE_FOCUS`, ecc...) elaborato dinamicamente a runtime.
-  - **Comunicazione:** Passiva. Viene spostata dal `Deck`, letta dallo `Shop` o processata dalle fasi di combattimento.
+**`Card` e `CardEffect`**
+Queste classi incarnano un approccio Data-Driven. Invece di creare decine di sottoclassi diverse per ogni singola carta, esiste un'unica classe `Card` popolata dinamicamente tramite JSON. Il suo comportamento specifico è dettato dall'enumeratore `EffectType` (come DAMAGE, HEAL, ecc.), elaborato a runtime. Sono entità passive manipolate dal `Deck`, lette dallo `Shop` o processate dal motore di combattimento.
 
 - **`Rollable`, `StandardDice` e `RollResult`**
-  - **Responsabilità:** Astrazione del lancio dei dadi. Anziché cablare `Math.random()` dentro il `CombatManager`, si utilizza l'interfaccia `Rollable`. `StandardDice` lancia un dado D6 fisico virtuale. Questo permette altissima testabilità (è possibile iniettare un dado "truccato" nei test) ed estensibilità (aggiungere dadi D8 o D20 in futuro).
+Rappresentano l'astrazione del lancio dei dadi. Anziché cablare `Math.random()` dentro il `CombatManager`, si utilizza l'interfaccia `Rollable`. `StandardDice` lancia un dado D6 fisico virtuale. Questo permette altissima testabilità (è possibile iniettare un dado "truccato" nei test) ed estensibilità (aggiungere dadi D8 o D20 in futuro).
 
-- **`EnemyArchetype` (Enum)**
-  - **Responsabilità:** Catalogo dei Boss. Definisce le statistiche base e i nomi dei tre incontri: *Avatar dell'Entropia* (Livello 0), *Leviatano Cosmico* (Livello 1) e *Assassino della Nebulosa* (Livello 2).
+**`EnemyArchetype` (Enum)**
+Funge da catalogo centralizzato per i Boss. Definisce le statistiche base e i nomi dei tre incontri principali: l'Avatar dell'Entropia (Livello 0), il Leviatano Cosmico (Livello 1) e l'Assassino della Nebulosa (Livello 2).
 
 - **`Deck`**
-  - **Responsabilità:** Implementa le meccaniche di manipolazione del mazzo. Gestisce una pila di pesca, una pila degli scarti e la logica di mescolamento casuale (`shuffle()`). Quando il mazzo è vuoto, ricicla gli scarti rimescolandoli.
-  - **Comunicazione:** È posseduto dal `PlayerProfile` o generato al volo dal `CombatManager` ad inizio scontro.
+Implementa le meccaniche di manipolazione del mazzo. Gestisce una pila di pesca, una pila degli scarti e la logica di mescolamento casuale (`shuffle()`). Quando il mazzo è vuoto, ricicla gli scarti rimescolandoli. Viene posseduto direttamente dal `PlayerProfile` o generato al volo dal `CombatManager` all'inizio di ogni scontro.
 
-- **`CombatManager`**
-  - **Responsabilità:** Entità centrale di orchestrazione della battaglia. Sebbene questo ruolo tenda fisiologicamente a generare una *God Class* (a causa dell'elevato numero di regole, calcoli e interazioni), il suo design è stato strutturato per delegare il carico elaborativo. Il manager gestisce lo stato ad alto livello, mantenendo i riferimenti al giocatore e al nemico, e coordinando le fasi di lancio dei dadi e l'assegnazione dei danni, ma delega l'esecuzione delle logiche specifiche ad altre componenti.
-  - **Comunicazione:** Invoca metodi su `Character`. Mantiene un riferimento a `EventPublisher` tramite il quale notifica al resto del sistema l'evoluzione del combattimento (es. assegnazione di danni o esiti della battaglia).
+**`CombatManager`**
+L'entità centrale di orchestrazione della battaglia. Sebbene le sue molteplici responsabilità potrebbero spingerlo a diventare una God Class, il suo design delega in realtà gran parte del carico elaborativo. Mantiene lo stato ad alto livello, tenendo traccia di giocatore e nemico, ma affida l'esecuzione delle logiche specifiche (come l'avanzamento dei turni) ad altre componenti. Comunica invocando metodi sulle entità ed emettendo notifiche tramite l'`EventPublisher`.
 
-- **Fasi del Combattimento (`TurnState` e implementazioni)**
-  - **Responsabilità:** Applicazione del *Pattern State*. 
-    - `StartPhaseState`: Rigenera il Focus e forza la pescata delle carte in mano iniziale.
-    - `ActionPhaseState`: Accetta comandi dall'utente (giocare carte consumando focus) e ne risolve **immediatamente** gli effetti (incluso il calcolo e il lancio visivo del dado).
-    - `EndPhaseState`: Fase conclusiva del turno in cui la IA del Boss prende il controllo ed esegue la sua mossa di risposta in base alla situazione tattica.
-  - **Comunicazione:** Ricevono l'istanza del `CombatManager` per dirigerlo al loro interno e invocare il cambio di stato alla fase successiva.
+**Fasi del Combattimento (`TurnState` e implementazioni)**
+Rappresentano l'applicazione del Pattern State. La `StartPhaseState` rigenera il Focus e forza la pescata della mano iniziale. L'`ActionPhaseState` accetta i comandi dall'utente e ne risolve immediatamente gli effetti, calcoli dei dadi inclusi. Infine, l'`EndPhaseState` è la fase in cui l'IA nemica prende il controllo per eseguire la mossa di risposta. Esse comunicano ricevendo l'istanza del `CombatManager` per invocarne i relativi cambi di stato.
 
 - **`BossAI` e `BossMove` (implementa `IEnemyAI` ed `EnemyDeckInfo`)**
-  - **Responsabilità:** Analizzare e reagire al contesto tattico in modo "intelligente" senza input umano. Sceglie l'azione ottimale dal deck nemico valutando la percentuale di HP residui del boss o la minaccia imminente. L'applicazione dell'*ISP* (Interface Segregation Principle) impone che chi vuole sapere le mosse del boss interroghi `EnemyDeckInfo`, chi vuole fargli fare una mossa chiami `IEnemyAI`.
-  - **Comunicazione:** Interroga attivamente il `CombatManager` per leggere gli HP correnti e risponde restituendo un oggetto `BossMove` al sistema.
+La loro responsabilità è analizzare e reagire al contesto tattico in modo "intelligente" senza input umano. Sceglie l'azione ottimale dal deck nemico valutando la percentuale di HP residui del boss o la minaccia imminente. L'applicazione dell'*ISP* (Interface Segregation Principle) impone che chi vuole sapere le mosse del boss interroghi `EnemyDeckInfo`, chi vuole fargli fare una mossa chiami `IEnemyAI`. Queste interrogano attivamente il `CombatManager` per leggere gli HP correnti e risponde restituendo un oggetto `BossMove` al sistema.
 
 - **`PlayerProfile`**
-  - **Responsabilità:** Lo stato macroscopico del giocatore fuori dalla battaglia. Tiene il conto dei Cristalli/Frammenti, la progressione (boss uccisi) e gestisce l'array della collezione totale e del mazzo scelto.
-  - **Comunicazione:** Letto dallo `Shop` per pagamenti e dal `DeckBuilder` per la modifica del mazzo. Scritto su disco dal Repository.
+Incapsula lo stato macroscopico del giocatore fuori dalla battaglia. Tiene traccia dei frammenti, della progressione contro i boss e gestisce l'intera collezione di carte oltre al mazzo attualmente in uso. Viene interpellato dallo `Shop` per gestire i pagamenti e dal `DeckBuilder`, oltre a essere persistito su disco dal Repository.
 
 - **`Shop`**
-  - **Responsabilità:** Generare offerte pseudocasuali pescando dal `CardCatalog` escludendo le carte base. Decide dinamicamente i prezzi.
-  - **Comunicazione:** Comunica con `PlayerProfile` decurtando i cristalli e trasferendo la carta acquistata nella collezione.
+La sua logica genera offerte pseudo-casuali pescando dal catalogo e calcola dinamicamente i prezzi di vendita. Dialoga costantemente con il `PlayerProfile` per convalidare le transazioni e trasferire le carte acquistate.
 
 ### 3.2 Layer `application` e Gestione Eventi
 
