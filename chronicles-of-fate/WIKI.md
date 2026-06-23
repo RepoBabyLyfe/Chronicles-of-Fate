@@ -93,13 +93,13 @@ Costituisce l'applicazione diretta del Dependency Inversion Principle. Definisce
 **`Card` e `CardEffect`**
 Queste classi incarnano un approccio Data-Driven. Invece di creare decine di sottoclassi diverse per ogni singola carta, esiste un'unica classe `Card` popolata dinamicamente tramite JSON. Il suo comportamento specifico è dettato dall'enumeratore `EffectType` (come DAMAGE, HEAL, ecc.), elaborato a runtime. Sono entità passive manipolate dal `Deck`, lette dallo `Shop` o processate dal motore di combattimento.
 
-- **`Rollable`, `StandardDice` e `RollResult`**
+**`Rollable`, `StandardDice` e `RollResult`**
 Rappresentano l'astrazione del lancio dei dadi. Anziché cablare `Math.random()` dentro il `CombatManager`, si utilizza l'interfaccia `Rollable`. `StandardDice` lancia un dado D6 fisico virtuale. Questo permette altissima testabilità (è possibile iniettare un dado "truccato" nei test) ed estensibilità (aggiungere dadi D8 o D20 in futuro).
 
 **`EnemyArchetype` (Enum)**
 Funge da catalogo centralizzato per i Boss. Definisce le statistiche base e i nomi dei tre incontri principali: l'Avatar dell'Entropia (Livello 0), il Leviatano Cosmico (Livello 1) e l'Assassino della Nebulosa (Livello 2).
 
-- **`Deck`**
+**`Deck`**
 Implementa le meccaniche di manipolazione del mazzo. Gestisce una pila di pesca, una pila degli scarti e la logica di mescolamento casuale (`shuffle()`). Quando il mazzo è vuoto, ricicla gli scarti rimescolandoli. Viene posseduto direttamente dal `PlayerProfile` o generato al volo dal `CombatManager` all'inizio di ogni scontro.
 
 **`CombatManager`**
@@ -108,39 +108,37 @@ L'entità centrale di orchestrazione della battaglia. Sebbene le sue molteplici 
 **Fasi del Combattimento (`TurnState` e implementazioni)**
 Rappresentano l'applicazione del Pattern State. La `StartPhaseState` rigenera il Focus e forza la pescata della mano iniziale. L'`ActionPhaseState` accetta i comandi dall'utente e ne risolve immediatamente gli effetti, calcoli dei dadi inclusi. Infine, l'`EndPhaseState` è la fase in cui l'IA nemica prende il controllo per eseguire la mossa di risposta. Esse comunicano ricevendo l'istanza del `CombatManager` per invocarne i relativi cambi di stato.
 
-- **`BossAI` e `BossMove` (implementa `IEnemyAI` ed `EnemyDeckInfo`)**
+**`BossAI` e `BossMove` (implementa `IEnemyAI` ed `EnemyDeckInfo`)**
 La loro responsabilità è analizzare e reagire al contesto tattico in modo "intelligente" senza input umano. Sceglie l'azione ottimale dal deck nemico valutando la percentuale di HP residui del boss o la minaccia imminente. L'applicazione dell'*ISP* (Interface Segregation Principle) impone che chi vuole sapere le mosse del boss interroghi `EnemyDeckInfo`, chi vuole fargli fare una mossa chiami `IEnemyAI`. Queste interrogano attivamente il `CombatManager` per leggere gli HP correnti e risponde restituendo un oggetto `BossMove` al sistema.
 
-- **`PlayerProfile`**
+**`PlayerProfile`**
 Incapsula lo stato macroscopico del giocatore fuori dalla battaglia. Tiene traccia dei frammenti, della progressione contro i boss e gestisce l'intera collezione di carte oltre al mazzo attualmente in uso. Viene interpellato dallo `Shop` per gestire i pagamenti e dal `DeckBuilder`, oltre a essere persistito su disco dal Repository.
 
-- **`Shop`**
+**`Shop`**
 La sua logica genera offerte pseudo-casuali pescando dal catalogo e calcola dinamicamente i prezzi di vendita. Dialoga costantemente con il `PlayerProfile` per convalidare le transazioni e trasferire le carte acquistate.
 
 ### 3.2 Layer `application` e Gestione Eventi
 
-- **`CombatOrchestrator`**
-  - **Responsabilità:** Estrapolata da `GameService` in ottica SRP. Assolve all'onere esclusivo di dirigere il ciclo di vita vitale e le interazioni del `CombatManager` (inizializzazione partita, caricamento battaglia interrotta, assegnazione ricompense e sblocco carte a fine scontro).
+**`CombatOrchestrator`**
+Estrapolato dal `GameService` in ottica SRP. Assolve all'onere esclusivo di dirigere il ciclo di vita vitale e le interazioni del `CombatManager` (inizializzazione partita, caricamento battaglia interrotta, assegnazione ricompense e sblocco carte a fine scontro).
 
-- **`ProfileManager`**
-  - **Responsabilità:** Gemello di orchestrazione estrapolato da `GameService`. Si dedica al mantenimento e al ciclo di vita del `PlayerProfile` (salvataggi/caricamenti delegando il Repository, pulizia del salvataggio e acquisto di carte dallo Shop).
+**`ProfileManager`**
+Gemello di orchestrazione estrapolato da `GameService`. Si dedica al mantenimento e al ciclo di vita del `PlayerProfile`, si occupa di salvataggi/caricamenti delegando il Repository, pulizia del salvataggio e acquisto di carte dallo Shop.
 
-- **`GameService` (Facade)**
-  - **Responsabilità:** Funge da punto di accesso unificato per i livelli superiori, incanalando le chiamate verso il `CombatOrchestrator` e il `ProfileManager`. Maschera la complessità orchestrale garantendo un'interfaccia pulita e stabile.
-  - **Comunicazione:** Viene iniettato (Dependency Injection) in modo sicuro nel costruttore dei Controller JavaFX.
+**`GameService` (Facade)**
+Il punto di accesso unificato per i livelli superiori, incanalando le chiamate verso il `CombatOrchestrator` e il `ProfileManager`. Maschera la complessità orchestrale garantendo un'interfaccia pulita e stabile; viene iniettato (attraversp Dependency Injection) in modo sicuro nel costruttore dei Controller JavaFX.
 
-- **`GameFactory`**
-  - **Responsabilità:** Sebbene i pattern Factory globali siano stati ridotti con l'architettura a iniezione, questa classe sopravvive con un ruolo specifico: la generazione parametrica (Factory Method) dei nemici e del giocatore all'avvio, astraendo l'istanziazione basata su `EnemyArchetype`.
+**`GameFactory`**
+Mantiene il ruolo essenziale della generazione parametrica dei nemici e dell'istanza iniziale del giocatore. Centralizza l'istanziazione basata sugli archetipi, rimuovendo tale complessità dagli altri livelli applicativi astraendo l'istanziazione basata su `EnemyArchetype`.
 
-- **Event Bus (`GameEventBus`, `EventPublisher`, `GameEvent`, `HpChangedEvent`, ecc...)**
-  - **Responsabilità:** Trasporto messaggi asincrono. L'interfaccia `EventPublisher` è usata dal Domain (per non dipendere direttamente da classi infrastrutturali). `GameEventBus` è l'implementazione concreta (Infrastructure). Gli eventi espliciti come `CardPlayedEvent` o `CombatEndedEvent` portano payload precisi.
-  - **Comunicazione:** I Listener (come i Controller grafici) si registrano (`subscribe(this)`). Quando il Bus riceve un publish, fa scattare in automatico la reaction nel Controller.
+**Event Bus (`GameEventBus`, `EventPublisher`, `GameEvent`, `HpChangedEvent`, ecc...)**
+Costituisce l'infrastruttura di trasporto per i messaggi asincroni. L'interfaccia `EventPublisher` è usata dal Domain (per non dipendere direttamente da classi infrastrutturali). `GameEventBus` è l'implementazione concreta (Infrastructure). Gli eventi espliciti come `CardPlayedEvent` o `CombatEndedEvent` portano payload precisi.
+I vari Listener, come i Controller grafici, si registrano (`subscribe(this)`) al bus e reagiscono in modo automatico alla pubblicazione di eventi mirati come il cambiamento degli HP o la conclusione di un turno. Quando il Bus riceve un publish, fa scattare in automatico la reaction nel Controller.
 
 ### 3.3 Layer `presentation` (UI e Controller FXML)
 
-- **Controllers: `MenuController`, `CombatController`, `ShopController`, `DeckBuilderController`, `VictoryController`**
-  - **Responsabilità:** Coordinare esclusivamente le schermate FXML. Ricevono input dai bottoni (`@FXML public void onPlayClicked()`) e chiamano i metodi del `GameService`. Se c'è da mostrare una vittoria o un HP modificato, si affidano agli eventi ricevuti dal `GameEventBus`.
-  - **Comunicazione:** Parlano *solo ed esclusivamente* con `GameService` e `SceneManager`. Non comunicano mai tra di loro.
+- **Controller: `MenuController`, `CombatController`, `ShopController`, `DeckBuilderController`, `VictoryController`**
+ Questi componenti coordinano esclusivamente le schermate dell'interfaccia JavaFX. Ricevono input dai bottoni (`@FXML public void onPlayClicked()`) e chiamano i metodi del `GameService`. Se c'è da mostrare una vittoria o un HP modificato, si affidano agli eventi ricevuti dal `GameEventBus`. I Controller non comunicano mai direttamente tra di loro, parlano *solo ed esclusivamente* con `GameService` e `SceneManager`.
 
 - **Classi Assistenti di UI (Animation, Rendering & UX)**
   - **`CombatAnimationManager`, `EnemyCardAnimator`, `DiceAnimator`**: De-clutterizzano i Controller gestendo logiche complesse legate a `FadeTransition` e `TranslateTransition`. Responsabili dei feedback ottici (movimenti, carte nemiche che appaiono minacciose, ritardi grafici).
@@ -150,16 +148,14 @@ La sua logica genera offerte pseudo-casuali pescando dal catalogo e calcola dina
 
 ### 3.4 Layer `persistence` e `infrastructure`
 
-- **`SceneManager` e `ViewNavigator`**
-  - **Responsabilità:** `ViewNavigator` è un'interfaccia usata dai Controller per cambiare scena senza sapere nulla di JavaFX. `SceneManager` ne è l'implementazione concreta: gestisce lo `Stage` primario, carica i file `.fxml` e implementa un `ControllerFactory` dinamico che inietta automaticamente il `GameService` e se stesso (come `ViewNavigator`) nel costruttore di ogni Controller.
-  - **Comunicazione:** Richiamato dai Controller grafici.
+**`SceneManager` e `ViewNavigator`**
+Il `ViewNavigator` è un'interfaccia usata dai Controller per cambiare scena senza sapere nulla di JavaFX. `SceneManager` ne è l'implementazione concreta: gestisce lo `Stage` primario, carica i file `.fxml` e implementa un `ControllerFactory` dinamico che inietta automaticamente il `GameService` e se stesso (come `ViewNavigator`) nel costruttore di ogni Controller.
 
-- **`AppLauncher`**
-  - **Responsabilità:** Il big bang del sistema (`public static void main`). Assegna i collegamenti "Hard-coded", avvia le impostazioni del *Primary Stage* (Fullscreen, Icone applicazione native dell'OS) e richiama il Menu.
+**`AppLauncher`**
+Il punto di ingresso reale del sistema (`public static void main`). Assegna i collegamenti "Hard-coded", avvia le impostazioni del *Primary Stage* (Fullscreen, Icone applicazione native dell'OS) e richiama il Menu.
 
-- **`JsonGameStateRepository` / `JsonCardCatalog`**
-  - **Responsabilità:** Implementano interfacce logiche. Gestiscono flussi I/O su file system. Usano la libreria *Gson* capace di sfruttare la reflection per tradurre array Java e strutture dati polimorfiche in formato testo JSON (es. `savegame.json` o lettura di `cards.json`).
-  - **Comunicazione:** Leggono e scrivono. Sollevano eccezioni passandole all'Application Layer in caso di file non trovato o corrotto.
+**`JsonGameStateRepository` / `JsonCardCatalog`**
+Queste classi implementano le interfacce logiche di persistenza. Gestiscono flussi I/O su file system. Usano la libreria *Gson* capace di sfruttare la reflection per tradurre array Java e strutture dati polimorfiche in formato testo JSON (es. `savegame.json` o lettura di `cards.json`). Leggono, scrivono, sollevano eccezioni passandole all'Application Layer in caso di file non trovato o corrotto.
 
 ---
 
