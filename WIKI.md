@@ -1,4 +1,4 @@
-# Chronicles of Fate - Documentazione Architetturale e Tecnica Completa
+# Chronicles of Fate - Documentazione Architetturale e Tecnica
 
 Il presente documento illustra l'architettura software, i Design Pattern adottati, la suddivisione delle responsabilità tra le componenti e i flussi di interazione all'interno del progetto **Chronicles of Fate**.
 
