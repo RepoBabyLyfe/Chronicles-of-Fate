@@ -223,8 +223,8 @@ Le mosse nemiche non scalano col D6, ma infliggono/curano valori "Flat" diretti,
 - **Lame di Plasma / Fendente Quantico:** Attacchi diretti estremamente veloci e letali (fino a 8 danni a colpo).
 - **Veleno Etereo / Passo d'Ombra:** Combinazione di micro-cure e avvelenamenti per sfiancare il giocatore.
 - **Esecuzione Stellare:** Mossa finale dell'IA. Infligge 14 danni istantanei. Impone al giocatore la chiusura rapida dello scontro o il costante mantenimento di un valore di HP prossimo al massimo, per evitare il termine prematuro della partita (Game Over).
-  > [!WARNING]
-  > L'attacco Esecuzione Stellare non è soggetto a mitigazioni derivanti dai tiri del dado. Il mancato mantenimento di un'AURA superiore alla soglia di 14 punti comporterà inevitabilmente un Game Over matematico.
+>[!WARNING]
+>L'attacco Esecuzione Stellare non è soggetto a mitigazioni derivanti dai tiri del dado. Il mancato mantenimento di un'AURA superiore alla soglia di 14 punti comporterà inevitabilmente un Game Over matematico.
 
 ---
 
