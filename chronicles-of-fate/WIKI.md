@@ -12,11 +12,22 @@ L'intero progetto è stato modellato applicando i principi della **Clean Archite
 > Il rispetto della Dependency Rule è un requisito architetturale inderogabile. Qualsiasi violazione come l'importazione di classi grafiche all'interno del layer Domain comprometterebbe l'intero paradigma progettuale.
 
 ### I 5 Livelli Architetturali
-1. **Domain (`domain`)**: Rappresenta il nucleo del software. Non è interessato a nulla di esterno. Contiene le entità pure, la matematica del gioco e la State Machine del combattimento.
-2. **Application (`application`)**: Rappresenta il livello dei Casi d'Uso. Definisce le interfacce (contratti) per i repository esterni e orchestra le interazioni tra gli oggetti di dominio (ad esempio, tramite il `GameService`).
-3. **Presentation (`presentation`)**: Rappresenta l'interfaccia utente in JavaFX. Dipende da Application e Domain. È l'unico strato a conoscere l'esistenza di bottoni, schermi e animazioni.
-4. **Persistence (`persistence`)**: Rappresenta lo strato tecnico che implementa i contratti di persistenza (salvataggio/caricamento). Dipende da Application. Utilizza librerie esterne come *Gson* per leggere/scrivere file.
-5. **Infrastructure (`infrastructure`)**: Rappresenta il collante del sistema. Risiede nel livello più esterno e si occupa di istanziare e collegare concretamente tutti i livelli precedenti.
+Il sistema si compone di cinque livelli fondamentali, ciascuno con responsabilità ben definite:
+
+**Domain (`domain`)**
+Rappresenta il nucleo del software. Non è interessato a nulla di esterno. Contiene le entità pure, la matematica del gioco e la State Machine del combattimento.
+
+**Application (`application`)**
+Rappresenta il livello dei Casi d'Uso. Definisce le interfacce (contratti) per i repository esterni e orchestra le interazioni tra gli oggetti di dominio (ad esempio, tramite il `GameService`).
+
+**Presentation (`presentation`)**
+Rappresenta l'interfaccia utente in JavaFX. Dipende da Application e Domain. È l'unico strato a conoscere l'esistenza di bottoni, schermi e animazioni.
+
+**Persistence (`persistence`)**
+Rappresenta lo strato tecnico che implementa i contratti di persistenza (salvataggio/caricamento). Dipende da Application. Utilizza librerie esterne come *Gson* per leggere/scrivere file.
+
+**Infrastructure (`infrastructure`)**
+Rappresenta il collante del sistema. Risiede nel livello più esterno e si occupa di istanziare e collegare concretamente tutti i livelli precedenti.
 
 ---
 
