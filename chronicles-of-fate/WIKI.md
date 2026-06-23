@@ -178,8 +178,8 @@ Il ciclo di gioco (*gameplay loop*) è strutturato in una delicata danza a turni
 ### 5.1 Preparazione e Dinamica di Combattimento
 
 - **Fase di Preparazione (Deck Building):** Prima di avviare l'incontro, è richiesto al giocatore di comporre il proprio mazzo di combattimento tramite l'apposito menu. L'utente ha la facoltà di selezionare le carte da includere attingendo direttamente dalla propria collezione privata, la quale si arricchisce progressivamente tramite gli acquisti effettuati nel Negozio Cosmico. Questa fase di pre-combattimento garantisce un'elevata personalizzazione strategica dell'approccio alla battaglia.
-  > [!TIP]
-  > La composizione del mazzo è critica per il successo. Un bilanciamento ottimale tra carte a basso costo in Focus (per l'estensione delle sequenze) e attacchi ad alto costo è imperativo per sconfiggere i Boss di livello avanzato.
+>[!TIP]
+>La composizione del mazzo è critica per il successo. Un bilanciamento ottimale tra carte a basso costo in Focus (per l'estensione delle sequenze) e attacchi ad alto costo è imperativo per sconfiggere i Boss di livello avanzato.
 
 - **Il Turno del Giocatore ("Tessitore di Fati"):**
   - **Limiti Iniziali:** Il giocatore inizia la run con **45 HP Max** e un serbatoio massimo di **15 punti Focus**. La collezione e il mazzo iniziale sono composti da 5 carte base: *Risonanza Eterea, Fenditura Quantica, Sovraccarico Biologico, Innesto Simbiotico, Assimilazione Oscura*.
