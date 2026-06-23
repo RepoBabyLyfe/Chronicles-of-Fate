@@ -4,7 +4,7 @@
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
-<StackPane fx:id="rootPane" stylesheets="@style.css" prefWidth="1000" prefHeight="750" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicam.cs.mpgc.rpg.matricola.presentation.MenuController">
+<StackPane fx:id="rootPane" stylesheets="@style.css" prefWidth="1000" prefHeight="750" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicam.cs.mpgc.rpg123283.presentation.MenuController">
 
     <Canvas fx:id="spaceCanvas" mouseTransparent="true" StackPane.alignment="CENTER"/>
 

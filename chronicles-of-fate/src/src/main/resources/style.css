@@ -360,14 +360,14 @@
 .deck-builder-bottom { -fx-padding: 20 0 0 0; }
 
 /* --- NEGOZIO --- */
-.shop-header { -fx-padding: 30px 20px 0px 20px; }
+.shop-header { -fx-padding: 30px 20px 40px 20px; }
 .shop-title { -fx-font-size: 42px; -fx-text-fill: #00e5ff; }
 .shop-fragments { -fx-text-fill: #00e5ff; -fx-font-size: 24px; -fx-effect: dropshadow(gaussian, rgba(0, 229, 255, 0.5), 15, 0, 0, 0); }
 .shop-section-title { -fx-text-fill: #b432ff; -fx-font-size: 28px; }
 .shop-status { -fx-font-size: 18px; }
 .shop-status-success { -fx-text-fill: #00ffcc; -fx-effect: dropshadow(gaussian, rgba(0, 255, 204, 0.5), 10, 0, 0, 0); }
 .shop-status-error { -fx-text-fill: #ff3366; -fx-effect: dropshadow(gaussian, rgba(255, 51, 102, 0.5), 10, 0, 0, 0); }
-.shop-footer { -fx-padding: 0px 20px 40px 20px; }
+.shop-footer { -fx-padding: 40px 20px 40px 20px; }
 
 /* --- ZOOM OVERLAY --- */
 .zoom-card-frame {

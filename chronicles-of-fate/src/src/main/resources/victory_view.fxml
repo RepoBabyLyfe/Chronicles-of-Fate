@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.canvas.Canvas?>
 
-<StackPane fx:id="rootPane" stylesheets="@style.css" prefWidth="1200" prefHeight="800" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicam.cs.mpgc.rpg.matricola.presentation.VictoryController">
+<StackPane fx:id="rootPane" stylesheets="@style.css" prefWidth="1200" prefHeight="800" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicam.cs.mpgc.rpg123283.presentation.VictoryController">
     <Canvas fx:id="spaceCanvas" mouseTransparent="true" StackPane.alignment="CENTER"/>
 
     <VBox alignment="CENTER" spacing="40">

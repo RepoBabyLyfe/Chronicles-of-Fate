@@ -5,7 +5,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
 
-<StackPane fx:id="rootPane" stylesheets="@style.css" prefWidth="1200" prefHeight="800" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicam.cs.mpgc.rpg.matricola.presentation.ShopController">
+<StackPane fx:id="rootPane" stylesheets="@style.css" prefWidth="1200" prefHeight="800" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicam.cs.mpgc.rpg123283.presentation.ShopController">
 
     <Canvas fx:id="spaceCanvas" mouseTransparent="true" StackPane.alignment="CENTER"/>
 
@@ -20,7 +20,7 @@
             <VBox alignment="CENTER" spacing="15">
                 <Label text="CARTE DISPONIBILI NELL'UNIVERSO" styleClass="boss-name, shop-section-title"/>
                 <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" hbarPolicy="NEVER" styleClass="clean-scroll-pane">
-                    <FlowPane fx:id="shopContainer" hgap="20" vgap="20" alignment="CENTER"/>
+                    <FlowPane fx:id="shopContainer" hgap="20" vgap="20" alignment="CENTER" style="-fx-padding: 0 0 0 35;"/>
                 </ScrollPane>
                 <Label fx:id="statusLabel" text="Seleziona una carta per acquistarla" styleClass="floating-log, shop-status"/>
             </VBox>
