@@ -4,7 +4,7 @@ plugins {
     id 'org.openjfx.javafxplugin' version '0.1.0'
 }
 
-group = 'it.unicam.cs.mpgc.rpg.matricola'
+group = 'it.unicam.cs.mpgc.rpg123283'
 version = '1.0-SNAPSHOT'
 
 repositories {
@@ -13,6 +13,7 @@ repositories {
 
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    implementation 'com.google.code.gson:gson:2.10.1'
 }
 
 test {
@@ -20,13 +21,12 @@ test {
 }
 
 javafx {
-    version = "21" // Usa la versione di Java che hai installata (es. 17 o 21)
+    version = "21"
     modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
 
 application {
-    //percorso della classe per avviare il gioco
-    mainClass = 'it.unicam.cs.mpgc.rpg.matricola.infrastructure.AppLauncher'
+    mainClass = 'it.unicam.cs.mpgc.rpg123283.infrastructure.AppLauncher'
 }
 
 tasks.withType(JavaCompile) {

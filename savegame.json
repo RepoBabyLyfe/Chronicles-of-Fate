@@ -1,9 +1,9 @@
 {
   "hasCombatData": true,
-  "playerHp": 45,
-  "playerFocus": 15,
-  "enemyHp": 80,
-  "etherFragments": 50,
-  "unlockedCards": ["Collasso Supernova", "Risonanza Eterea", "Sovraccarico Biologico", "Innesto Simbiotico", "Fluttuazione Quantica", "Intrusione Psionica", "Lacerazione Spaziale", "Assimilazione Oscura", "Fenditura Quantica", "Miasma Parassitario"],
-  "defeatedBosses": 1
+  "playerHp": 37,
+  "playerFocus": 6,
+  "enemyHp": 35,
+  "etherFragments": 0,
+  "unlockedCards": ["Risonanza Eterea", "Sovraccarico Biologico", "Innesto Simbiotico", "Assimilazione Oscura", "Fenditura Quantica"],
+  "defeatedBosses": 0
 }

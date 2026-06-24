@@ -3,24 +3,21 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.canvas.Canvas?>
 
-<StackPane fx:id="rootPane" stylesheets="@style.css" prefWidth="1200" prefHeight="800" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicam.cs.mpgc.rpg.matricola.presentation.VictoryController">
+<StackPane fx:id="rootPane" stylesheets="@style.css" prefWidth="1200" prefHeight="800" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicam.cs.mpgc.rpg123283.presentation.VictoryController">
     <Canvas fx:id="spaceCanvas" mouseTransparent="true" StackPane.alignment="CENTER"/>
 
     <VBox alignment="CENTER" spacing="40">
 
-        <!-- Titolo Esito -->
         <Label fx:id="outcomeTitle" text="VITTORIA" styleClass="title-text, outcome-title"/>
 
-        <!-- Sottotitolo e Ricompense -->
         <VBox fx:id="rewardsBox" alignment="CENTER" spacing="20" maxWidth="600" styleClass="ps2-panel, victory-panel">
             <Label fx:id="outcomeSubtitle" text="" styleClass="victory-subtitle" wrapText="true"/>
             <Label fx:id="fragmentsLabel" text="" styleClass="victory-fragments"/>
         </VBox>
 
-        <!-- Pulsanti Navigazione -->
         <VBox fx:id="buttonsBox" alignment="CENTER" spacing="15" maxWidth="400">
-            <Button text="[ GIOCA ANCORA ]" onAction="#onPlayAgainClicked" styleClass="ps2-button" maxWidth="Infinity"/>
-            <Button text="[ NEGOZIO ]" onAction="#onGoToShopClicked" styleClass="ps2-button" maxWidth="Infinity"/>
+            <Button fx:id="playAgainButton" text="[ GIOCA ANCORA ]" onAction="#onPlayAgainClicked" styleClass="ps2-button" maxWidth="Infinity"/>
+            <Button fx:id="compendiumButton" text="[ COMPENDIO ]" onAction="#onGoToCompendiumClicked" styleClass="ps2-button" maxWidth="Infinity"/>
             <Button text="[ TORNA AL MENU ]" onAction="#onBackToMenuClicked" styleClass="system-button" maxWidth="Infinity"/>
         </VBox>
 

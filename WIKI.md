@@ -155,21 +155,20 @@ Il `ViewNavigator` è un'interfaccia usata dai Controller per cambiare scena sen
 Il punto di ingresso reale del sistema (`public static void main`). Assegna i collegamenti "Hard-coded", avvia le impostazioni del *Primary Stage* (Fullscreen, Icone applicazione native dell'OS) e richiama il Menu.
 
 **`JsonGameStateRepository` / `JsonCardCatalog`**
-Queste classi implementano le interfacce logiche di persistenza. Gestiscono flussi I/O su file system. Usano la libreria *Gson* capace di sfruttare la reflection per tradurre array Java e strutture dati polimorfiche in formato testo JSON (es. `savegame.json` o lettura di `cards.json`). Leggono, scrivono, sollevano eccezioni passandole all'Application Layer in caso di file non trovato o corrotto.
+Queste classi implementano le interfacce logiche di persistenza e gestiscono i flussi I/O su file system. Il `JsonCardCatalog` utilizza la libreria *Gson* capace di sfruttare la reflection per tradurre in automatico la complessa struttura dati di `cards.json`. Il `JsonGameStateRepository`, al contrario, per elaborare i salvataggi (`savegame.json`) utilizza un parser JSON custom scritto interamente a mano tramite manipolazioni di stringhe (es. `String.format`, `indexOf`, `substring`). Leggono, scrivono e sollevano eccezioni passandole all'Application Layer in caso di file non trovato o corrotto.
 
 ---
 
 ## 4. Organizzazione dei Dati e Persistenza
 
-La persistenza è basata su **Gson (Google JSON)**, implementata seguendo le linee guida ufficiali della [Gson User Guide](https://google.github.io/gson/UserGuide.html) per garantire efficienza, assenza di configurazioni complesse (*data binding* automatico) e un'eccellente capacità di gestire oggetti Java complessi.
+La persistenza dei dati utilizza il formato JSON ma si divide in due approcci implementativi distinti: l'uso della libreria **Gson (Google JSON)** per la lettura del catalogo, e un parser testuale personalizzato per il salvataggio dinamico della partita.
 
-1. **Il Catalogo (`cards.json`):** Un file master letto in modalità *read-only* all'avvio. Contiene tutte le carte teoricamente esistenti nel gioco (ID, nome, stats). Viene caricato in un `JsonCardCatalog` che funge da dizionario. Grazie al supporto nativo di Gson, la deserializzazione del JSON in collezioni e tipi personalizzati (tramite classi standard o `TypeToken`) avviene in maniera del tutto trasparente.
+1. **Il Catalogo (`cards.json`):** Un file master letto in modalità *read-only* all'avvio. Contiene tutte le carte teoricamente esistenti nel gioco (ID, nome, stats). Viene caricato in un `JsonCardCatalog` che funge da dizionario. Grazie al supporto nativo di Gson, la deserializzazione del JSON in collezioni e tipi personalizzati (tramite classi standard o `TypeToken`) avviene in maniera del tutto trasparente ed efficiente.
 
 2. **Il Salvataggio (`savegame.json`):**
-   Rappresenta il *Record* `GameState` serializzato in modo rigoroso.
+   Rappresenta il *Record* `GameState` serializzato. A differenza del catalogo, questo file viene generato e letto in totale autonomia dalla classe `JsonGameStateRepository` senza dipendere da librerie esterne.
    - **Gestione Profonda dello Stato:** A differenza di un salvataggio basilare, non memorizza solo il `PlayerProfile` (collezione e frammenti), ma cattura dinamicamente l'esatto stato di un combattimento in corso (HP e Focus attuali di giocatore e nemico). In questo modo, qualora il gioco venga interrotto a metà battaglia, il `GameService` ripristinerà perfettamente lo scontro in atto dal punto esatto.
-   - **Supporto Nativo a Record e Collezioni:** Gson gestisce autonomamente liste, mappe e tipi base, oltre a supportare senza problemi la deserializzazione della struttura immutabile dei Java *Record*. 
-   - **Gestione dei campi omessi/temporanei:** Il file di output è mantenuto compatto poiché Gson omette di default i valori `null`. Eventuali variabili di stato transitorie che non devono essere salvate vengono automaticamente ignorate se dichiarate col modificatore `transient` (maggiori dettagli sui modificatori esclusi sono disponibili nella [documentazione di Gson](https://google.github.io/gson/UserGuide.html#excluding-fields-from-serialization-and-deserialization)).
+   - **Parser Custom e Formattazione:** La scrittura del file avviene tramite una composizione testuale nativa (metodo `String.format()`), garantendo pieno controllo e assenza di over-engineering. Il caricamento sfrutta algoritmi custom testuali (tramite indici e `substring`) per estrarre le chiavi JSON, assicurando inoltre la sicurezza in caso di chiavi mancanti.
 > [!WARNING]
 > La manomissione manuale del file `savegame.json` da parte dell'utente finale può causare la corruzione della struttura dati in fase di deserializzazione, compromettendo irrimediabilmente i progressi di gioco.
 
