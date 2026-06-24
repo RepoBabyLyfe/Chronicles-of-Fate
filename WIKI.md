@@ -161,13 +161,15 @@ Queste classi implementano le interfacce logiche di persistenza. Gestiscono flus
 
 ## 4. Organizzazione dei Dati e Persistenza
 
-La persistenza è basata su **Gson (Google JSON)** per la sua facilità di parsing e lettura.
+La persistenza è basata su **Gson (Google JSON)**, implementata seguendo le linee guida ufficiali della [Gson User Guide](https://google.github.io/gson/UserGuide.html) per garantire efficienza, assenza di configurazioni complesse (*data binding* automatico) e un'eccellente capacità di gestire oggetti Java complessi.
 
-1. **Il Catalogo (`cards.json`):** 
-   Un file master letto in modalità *read-only* all'avvio. Contiene tutte le carte teoricamente esistenti nel gioco (ID, nome, stats). Viene caricato in un `JsonCardCatalog` che funge da dizionario.
+1. **Il Catalogo (`cards.json`):** Un file master letto in modalità *read-only* all'avvio. Contiene tutte le carte teoricamente esistenti nel gioco (ID, nome, stats). Viene caricato in un `JsonCardCatalog` che funge da dizionario. Grazie al supporto nativo di Gson, la deserializzazione del JSON in collezioni e tipi personalizzati (tramite classi standard o `TypeToken`) avviene in maniera del tutto trasparente.
+
 2. **Il Salvataggio (`savegame.json`):**
    Rappresenta il *Record* `GameState` serializzato in modo rigoroso.
-   A differenza di un salvataggio basilare, non memorizza solo il `PlayerProfile` (collezione e frammenti), ma cattura dinamicamente l'esatto stato di un combattimento in corso (HP e Focus attuali di giocatore e nemico). In questo modo, qualora il gioco venga interrotto a metà battaglia, il `GameService` ripristinerà perfettamente lo scontro in atto dal punto esatto. Gson gestisce autonomamente liste e tipi base.
+   - **Gestione Profonda dello Stato:** A differenza di un salvataggio basilare, non memorizza solo il `PlayerProfile` (collezione e frammenti), ma cattura dinamicamente l'esatto stato di un combattimento in corso (HP e Focus attuali di giocatore e nemico). In questo modo, qualora il gioco venga interrotto a metà battaglia, il `GameService` ripristinerà perfettamente lo scontro in atto dal punto esatto.
+   - **Supporto Nativo a Record e Collezioni:** Gson gestisce autonomamente liste, mappe e tipi base, oltre a supportare senza problemi la deserializzazione della struttura immutabile dei Java *Record*. 
+   - **Gestione dei campi omessi/temporanei:** Il file di output è mantenuto compatto poiché Gson omette di default i valori `null`. Eventuali variabili di stato transitorie che non devono essere salvate vengono automaticamente ignorate se dichiarate col modificatore `transient` (maggiori dettagli sui modificatori esclusi sono disponibili nella [documentazione di Gson](https://google.github.io/gson/UserGuide.html#excluding-fields-from-serialization-and-deserialization)).
 > [!WARNING]
 > La manomissione manuale del file `savegame.json` da parte dell'utente finale può causare la corruzione della struttura dati in fase di deserializzazione, compromettendo irrimediabilmente i progressi di gioco.
 
