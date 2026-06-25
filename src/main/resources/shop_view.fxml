@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+
+<StackPane fx:id="rootPane" stylesheets="@style.css" prefWidth="1200" prefHeight="800" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unicam.cs.mpgc.rpg123283.presentation.ShopController">
+
+    <Canvas fx:id="spaceCanvas" mouseTransparent="true" StackPane.alignment="CENTER"/>
+
+    <BorderPane>
+        <top>
+            <VBox alignment="CENTER" spacing="10" BorderPane.alignment="CENTER" styleClass="shop-header">
+                <Label text="LA FORGIA DELL'ETERE" styleClass="title-text, shop-title"/>
+            </VBox>
+        </top>
+
+        <center>
+            <VBox alignment="CENTER" spacing="15">
+                <Label text="CARTE DISPONIBILI NELL'UNIVERSO" styleClass="boss-name, shop-section-title"/>
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" hbarPolicy="NEVER" styleClass="clean-scroll-pane">
+                    <FlowPane fx:id="shopContainer" hgap="20" vgap="20" alignment="CENTER" style="-fx-padding: 0 0 0 35;"/>
+                </ScrollPane>
+                <Label fx:id="statusLabel" text="Seleziona una carta per acquistarla" styleClass="floating-log, shop-status"/>
+            </VBox>
+        </center>
+
+        <bottom>
+            <HBox alignment="CENTER" styleClass="shop-footer">
+                <Button text="&lt; TORNA AL MENU" onAction="#onBackClicked" styleClass="system-button"/>
+            </HBox>
+        </bottom>
+    </BorderPane>
+
+    <StackPane fx:id="zoomOverlayPane" alignment="CENTER" mouseTransparent="true" StackPane.alignment="CENTER"/>
+
+    <HBox StackPane.alignment="TOP_RIGHT" spacing="10" styleClass="crystal-box" maxHeight="54" maxWidth="120" translateY="20" translateX="-20" alignment="CENTER_LEFT">
+        <ImageView fitWidth="48" fitHeight="48" preserveRatio="true">
+            <image>
+                <Image url="@images/crystal_icon.png"/>
+            </image>
+        </ImageView>
+        <Label fx:id="crystalCountLabel" text="0" styleClass="crystal-text"/>
+    </HBox>
+</StackPane>
