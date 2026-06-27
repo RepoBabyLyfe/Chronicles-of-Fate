@@ -226,26 +226,7 @@ public class CombatController implements EventPublisher {
         isAnimating = false;
     }
 
-    @FXML
-    public void onLoadInCombatClicked() {
-        try {
-            gameService.loadGame(player);
 
-            this.player = gameService.getCombatManager().getPlayer();
-            this.enemy = gameService.getCombatManager().getEnemy();
-            combatPresenter.setCharacters(this.player, this.enemy);
-
-            playerDeck = gameService.getCustomDeck();
-            playerDeck.drawCards(3);
-            renderHand();
-            combatPresenter.updateUI();
-
-            notificationManager.logMessage("Sincronizzazione completata. Partita caricata.");
-            onResumeClicked();
-        } catch (Exception e) {
-            notificationManager.logMessage("Errore: Nessun salvataggio trovato nei registri.");
-        }
-    }
 
     @FXML
     public void onRestartClicked() {

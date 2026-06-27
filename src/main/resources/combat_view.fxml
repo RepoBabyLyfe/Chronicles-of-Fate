@@ -88,11 +88,11 @@
         <VBox alignment="CENTER" spacing="20" maxWidth="350" styleClass="ps2-panel, menu-box">
             <Label text="SISTEMA IN PAUSA" styleClass="title-text, pause-title"/>
             <Button text="[ RIPRENDI ]" onAction="#onResumeClicked" styleClass="ps2-button" maxWidth="Infinity"/>
-            <Button text="[ CARICA PARTITA ]" onAction="#onLoadInCombatClicked" styleClass="system-button" maxWidth="Infinity"/>
             <Button text="[ SALVA ED ESCI ]" onAction="#onSaveAndQuitClicked" styleClass="system-button" maxWidth="Infinity"/>
             <Button text="[ SALVA PARTITA ]" onAction="#onSaveClicked" styleClass="system-button" maxWidth="Infinity"/>
             <Button text="[ RIAVVIA SCONTRO ]" onAction="#onRestartClicked" styleClass="system-button" maxWidth="Infinity"/>
-            <Button text="[ TORNA AL MENU' (SENZA SALVARE) ]" onAction="#onBackToMenuClicked" styleClass="system-button" maxWidth="Infinity"/>
+            <Button text="[ TORNA AL MENU' 
+                            (SENZA SALVARE) ]" onAction="#onBackToMenuClicked" styleClass="system-button" maxWidth="Infinity"/>
         </VBox>
     </VBox>
 
