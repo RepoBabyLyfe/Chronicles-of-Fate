@@ -274,11 +274,19 @@ Le mosse nemiche non scalano col D6, ma infliggono/curano valori "Flat" diretti,
 
 ## 6. Guide Linee per l'Estensibilità
 
-Il progetto garantisce una rapida scalabilità orizzontale:
+Il progetto garantisce una rapida scalabilità orizzontale.
 
-1. **Aggiunta di Contenuti:** L'architettura *Data-Driven* centralizzata in `cards.json` permette a game designer di bilanciare le statistiche e introdurre nuove carte nello Shop o nel mazzo base semplicemente editando il file di configurazione, demandando a `JsonCardCatalog` la traduzione logica.
-2. **Evoluzione del Combattimento:** L'integrazione di regole accessorie (es. una fase "Evento Casuale" o "Fase di Pre-Azione") richiede unicamente lo sviluppo di una nuova classe implementante `TurnState`, integrata poi nel normale ciclo del `CombatManager`.
-3. **Sviluppo UI:** La creazione di nuove schermate e dei relativi `.fxml` richiede un Controller con un costruttore standard `(GameService, SceneManager)`. L'infrastruttura di Injection lo innesterà autonomamente senza registrazioni manuali centralizzate.
+**Aggiunta di Contenuti**
+
+L'architettura *Data-Driven* centralizzata in `cards.json` permette ai game designer di bilanciare le statistiche e introdurre nuove carte nello Shop o nel mazzo base semplicemente modificando il file di configurazione, demandando a `JsonCardCatalog` la traduzione logica.
+
+**Evoluzione del Combattimento**
+
+L'integrazione di nuove regole o fasi aggiuntive (ad esempio una fase "Evento Casuale" o una "Fase di Pre-Azione") richiede unicamente lo sviluppo di una nuova classe che implementi `TurnState`, integrata successivamente nel normale ciclo del `CombatManager`.
+
+**Sviluppo UI**
+
+La creazione di nuove schermate e relativi file `.fxml` richiede un Controller con costruttore standard `(GameService, SceneManager)`. L'infrastruttura di injection provvede all'integrazione automatica, senza necessità di registrazioni manuali centralizzate.
 
 ---
 
@@ -299,12 +307,27 @@ Nonostante la robusta architettura di base, il progetto è predisposto per l'int
 
 ## 8. Dichiarazione Utilizzo AI (Artificial Intelligence)
 
-Si dichiara l'impiego di strumenti avanzati basati su Large Language Models (LLMs) lungo l'intero iter di sviluppo del progetto.
+Si dichiara l’impiego di strumenti basati su Large Language Models (LLMs) lungo l’intero ciclo di sviluppo del progetto.
 
-- **Rifattorizzazione Architetturale:** L'AI ha svolto un ruolo analitico nell'identificazione di *Code Smells* e debito tecnico, aiutando a convertire vecchie strutture statiche verso un modello solido a Iniezione di Dipendenze e basato sul Pattern Facade e Observer. Ciononostante, classi di utilità mirata come la `GameFactory` sono state preservate su consiglio dell'AI esclusivamente per il partizionamento parametrico degli archetipi.
-- **Micro-Design Logic (State & Math):** L'implementazione matematica del calcolo dei danni combinato con tiri D6 e moltiplicatori cumulativi è stata elaborata sfruttando capacità analitiche di calcolo dell'AI, così come la strutturazione del Pattern State rigoroso per impedire stati illegali nel combattimento.
-- **Rendering & Ottimizzazioni JavaFX:** L'AI generativa è stata cruciale nella risoluzione di colli di bottiglia critici nel framerate. In particolare, ha individuato il memory leak e i lag spike dell'engine dello spazio, spostando l'istanziazione nativa degli oggetti JavaFX fuori dal loop dell'Animation Timer. Successivamente, l'AI ha individuato e risolto un grave problema di lag e freeze della UI nel Deck Builder, causato dal ricaricamento sincrono e continuo delle immagini dal disco fisso (I/O) ad ogni aggiornamento della schermata. L'AI ha implementato una `ConcurrentHashMap` statica (Memory Cache) in `HandViewRenderer`, permettendo il salvataggio in RAM delle texture e garantendo una reattività immediata. L'AI è intervenuta inoltre nel bilanciamento *pixel-perfect* dell'interfaccia utente, aggiungendo padding e traslazioni correttive per bilanciare otticamente l'asimmetria causata dalle scrollbar invisibili native di JavaFX (come l'allineamento al centro della griglia delle carte nel Negozio). Infine, l'AI ha generato buona parte del CSS (`style.css`) basandosi sui principi formali del Neo-Morphism e layout "Cyber-SciFi".
-- **Gestione Persistenza:** Fornitura e controllo delle direttive per la serializzazione/deserializzazione corretta degli oggetti con *Gson*.
-- **Asset Grafici e Illustrazioni delle Carte:** Una delle sfide maggiori per un progetto indipendente è la produzione di asset visivi di alta qualità coerenti tra loro. Per ovviare all'assenza di un team di concept artist dedicato, tutte le illustrazioni grafiche presenti sulle carte giocabili sono state interamente generate attraverso intelligenze artificiali *Text-to-Image* (es. Midjourney / DALL-E). Questo approccio è stato esteso anche a molti altri oggetti e icone dell'interfaccia grafica (UI), permettendo di mantenere una forte coerenza tematica (Cyber-SciFi e Space Fantasy) e garantendo un impatto visivo professionale pur mantenendo azzerati i tempi e i costi tipici della produzione artistica tradizionale.
+**Rifattorizzazione Architetturale**
+
+L’AI ha supportato l’analisi del codice nell’individuazione di *code smells* e debito tecnico, contribuendo alla transizione verso un’architettura basata su Iniezione di Dipendenze e sull’utilizzo dei pattern Facade e Observer. Alcune classi di utilità mirata, come `GameFactory`, sono state mantenute per supportare il partizionamento parametrico degli archetipi, anche su indicazione dell’analisi assistita.
+
+**Micro-Design Logic (State & Math)**
+
+L’AI ha contribuito alla definizione della logica matematica relativa al calcolo dei danni, includendo tiri D6 e moltiplicatori cumulativi, oltre alla strutturazione del Pattern State per garantire la coerenza e prevenire stati invalidi durante il combattimento.
+
+**Rendering & Ottimizzazioni JavaFX**
+
+L’AI è stata utilizzata per l’identificazione e la risoluzione di colli di bottiglia prestazionali nel rendering. In particolare, ha contribuito a correggere problemi di framerate nell’engine spaziale, spostando la creazione degli oggetti JavaFX fuori dal ciclo dell’`AnimationTimer`. È intervenuta inoltre nell’ottimizzazione del Deck Builder, risolvendo rallentamenti causati dal caricamento sincrono delle immagini da disco, introducendo una `ConcurrentHashMap` statica come cache in `HandViewRenderer` per mantenere le texture in memoria e ridurre l’I/O. Ulteriori interventi hanno riguardato la rifinitura dell’interfaccia utente, con correzioni di layout e padding per compensare disallineamenti dovuti ai componenti nativi di JavaFX. È stato inoltre generato il file `style.css`, ispirato a principi di Neo-Morphism e a uno stile Cyber-SciFi coerente con l’ambientazione.
+
+**Gestione Persistenza**
+
+Supporto nella definizione e verifica delle logiche di serializzazione e deserializzazione degli oggetti tramite Gson.
+
+**Asset Grafici e UI**
+
+Le illustrazioni delle carte e parte degli asset grafici dell’interfaccia sono stati generati tramite strumenti di intelligenza artificiale text-to-image. Questo ha permesso di mantenere una coerenza stilistica Cyber-SciFi e Space Fantasy, riducendo i tempi di produzione degli asset visivi e garantendo uniformità estetica tra le componenti grafiche del progetto.
+
 
 Tutte le implementazioni, le architetture proposte e gli script generati dall'Intelligenza Artificiale sono stati interamente letti, revisionati, corretti, modificati, convalidati e all'occorrenza scartati dallo sviluppatore. 
