@@ -209,7 +209,7 @@ Rappresenta il *Record* `GameState` serializzato. A differenza del catalogo, que
 
 **Gestione Profonda dello Stato**
 
-A differenza di un salvataggio basilare, non memorizza solo il `PlayerProfile` (collezione e frammenti), ma cattura dinamicamente l'esatto stato di un combattimento in corso (HP e Focus attuali di giocatore e nemico). In questo modo, qualora il gioco venga interrotto a metà battaglia, il `GameService` ripristinerà perfettamente lo scontro in atto dal punto esatto.
+A differenza di un salvataggio basilare, non memorizza solo il `PlayerProfile` (collezione e frammenti), ma cattura dinamicamente l'esatto stato di un combattimento in corso (HP e Focus attuali di giocatore e nemico). In questo modo, qualora il gioco venga interrotto a metà battaglia, il `GameService` ripristinerà perfettamente lo scontro in atto dal punto esatto quando si riprende la partita dal Menu Principale (pulsante "Continua").
 
 **Parser Custom e Formattazione**
 
