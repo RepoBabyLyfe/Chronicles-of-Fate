@@ -193,14 +193,25 @@ Queste classi implementano le interfacce logiche di persistenza e gestiscono i f
 
 La persistenza dei dati utilizza il formato JSON ma si divide in due approcci implementativi distinti: l'uso della libreria **Gson (Google JSON)** per la lettura del catalogo, e un parser testuale personalizzato per il salvataggio dinamico della partita.
 
-1. **Il Catalogo (`cards.json`):** Un file master letto in modalità *read-only* all'avvio. Contiene tutte le carte teoricamente esistenti nel gioco (ID, nome, stats). Viene caricato in un `JsonCardCatalog` che funge da dizionario. Grazie al supporto nativo di Gson, la deserializzazione del JSON in collezioni e tipi personalizzati (tramite classi standard o `TypeToken`) avviene in maniera del tutto trasparente ed efficiente.
+**Il Catalogo (`cards.json`)**
 
-2. **Il Salvataggio (`savegame.json`):**
-   Rappresenta il *Record* `GameState` serializzato. A differenza del catalogo, questo file viene generato e letto in totale autonomia dalla classe `JsonGameStateRepository` senza dipendere da librerie esterne.
-   - **Gestione Profonda dello Stato:** A differenza di un salvataggio basilare, non memorizza solo il `PlayerProfile` (collezione e frammenti), ma cattura dinamicamente l'esatto stato di un combattimento in corso (HP e Focus attuali di giocatore e nemico). In questo modo, qualora il gioco venga interrotto a metà battaglia, il `GameService` ripristinerà perfettamente lo scontro in atto dal punto esatto.
-   - **Parser Custom e Formattazione:** La scrittura del file avviene tramite una composizione testuale nativa (metodo `String.format()`), garantendo pieno controllo e assenza di over-engineering. Il caricamento sfrutta algoritmi custom testuali (tramite indici e `substring`) per estrarre le chiavi JSON, assicurando inoltre la sicurezza in caso di chiavi mancanti.
+È un file master letto in modalità *read-only* all'avvio. Contiene tutte le carte teoricamente esistenti nel gioco (ID, nome, stats). Viene caricato in un `JsonCardCatalog` che funge da dizionario. Grazie al supporto nativo di Gson, la deserializzazione del JSON in collezioni e tipi personalizzati (tramite classi standard o `TypeToken`) avviene in maniera del tutto trasparente ed efficiente.
+
+**Il Salvataggio (`savegame.json`)**
+
+Rappresenta il *Record* `GameState` serializzato. A differenza del catalogo, questo file viene generato e letto in totale autonomia dalla classe `JsonGameStateRepository` senza dipendere da librerie esterne.
+
+**Gestione Profonda dello Stato**
+
+A differenza di un salvataggio basilare, non memorizza solo il `PlayerProfile` (collezione e frammenti), ma cattura dinamicamente l'esatto stato di un combattimento in corso (HP e Focus attuali di giocatore e nemico). In questo modo, qualora il gioco venga interrotto a metà battaglia, il `GameService` ripristinerà perfettamente lo scontro in atto dal punto esatto.
+
+**Parser Custom e Formattazione**
+
+La scrittura del file avviene tramite una composizione testuale nativa (metodo `String.format()`), garantendo pieno controllo e assenza di over-engineering. Il caricamento sfrutta algoritmi custom testuali (tramite indici e `substring`) per estrarre le chiavi JSON, assicurando inoltre la sicurezza in caso di chiavi mancanti.
+
 > [!WARNING]
 > La manomissione manuale del file `savegame.json` da parte dell'utente finale può causare la corruzione della struttura dati in fase di deserializzazione, compromettendo irrimediabilmente i progressi di gioco.
+
 
 ---
 
