@@ -1,6 +1,12 @@
 # Chronicles of Fate - Documentazione Architetturale e Tecnica
 
-Questo documento descrive l'architettura, i Design Pattern, le responsabilità dei componenti e come interagiscono nel progetto **Chronicles of Fate**.
+Questa documentazione descrive l’architettura software, i principali design pattern adottati, la suddivisione delle responsabilità tra i componenti e le modalità di interazione all’interno del progetto **Chronicles of Fate**.
+
+Il documento ha l’obiettivo di fornire una visione chiara e strutturata dell’implementazione, facilitando la comprensione del codice, la manutenzione e l’eventuale estensione del sistema. Vengono inoltre analizzate le scelte progettuali più rilevanti e il loro impatto sull’organizzazione complessiva dell’applicazione.
+
+La documentazione è organizzata per layer e responsabilità, seguendo una separazione coerente tra logica di gioco, gestione dei dati, persistenza e interfaccia utente.
+
+Per una panoramica generale del progetto, delle sue funzionalità e delle modalità di esecuzione, fare riferimento al file **README.md**.
 
 ---
 
