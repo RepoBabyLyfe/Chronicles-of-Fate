@@ -71,7 +71,6 @@ public class CombatController implements EventPublisher {
     private HandViewRenderer handRenderer;
     private UINotificationManager notificationManager;
     private CombatPresenter combatPresenter;
-    private SpaceBackgroundEngine spaceBackgroundEngine;
 
     @FXML
     public void initialize() {
@@ -102,7 +101,7 @@ public class CombatController implements EventPublisher {
         combatPresenter.updateUI();
 
         if (spaceCanvas != null && rootPane != null) {
-            this.spaceBackgroundEngine = SpaceBackgroundInitializer.setup(rootPane, spaceCanvas);
+            SpaceBackgroundInitializer.setup(rootPane, spaceCanvas);
         }
         this.enemyCardAnimator = new EnemyCardAnimator(enemyCardOverlay, enemyCardImage, enemyOverlayText);
 

@@ -36,12 +36,10 @@ public class VictoryController {
     @FXML
     private javafx.scene.control.Button compendiumButton;
 
-    private SpaceBackgroundEngine spaceBackgroundEngine;
-
     @FXML
     public void initialize() {
         if (spaceCanvas != null && rootPane != null) {
-            this.spaceBackgroundEngine = SpaceBackgroundInitializer.setup(rootPane, spaceCanvas);
+            SpaceBackgroundInitializer.setup(rootPane, spaceCanvas);
         }
         CombatResult result = SceneManager.getInstance().getGameService().getLastCombatResult();
         if (result != null) {

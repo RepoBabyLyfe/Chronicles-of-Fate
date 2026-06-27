@@ -28,7 +28,6 @@ public class ShopController {
     @FXML private Label statusLabel;
     @FXML private StackPane zoomOverlayPane;
 
-    private SpaceBackgroundEngine spaceBackgroundEngine;
     private CardZoomOverlay cardZoomOverlay;
 
     private CardCatalog catalog;
@@ -37,7 +36,7 @@ public class ShopController {
     @FXML
     public void initialize() {
         if (spaceCanvas != null && rootPane != null) {
-            this.spaceBackgroundEngine = SpaceBackgroundInitializer.setup(rootPane, spaceCanvas);
+            SpaceBackgroundInitializer.setup(rootPane, spaceCanvas);
         }
 
         GameService gameService = SceneManager.getInstance().getGameService();

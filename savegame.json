@@ -1,7 +1,7 @@
 {
   "hasCombatData": true,
   "playerHp": 32,
-  "playerFocus": 9,
+  "playerFocus": 15,
   "enemyHp": 24,
   "etherFragments": 0,
   "unlockedCards": ["Risonanza Eterea", "Sovraccarico Biologico", "Innesto Simbiotico", "Assimilazione Oscura", "Fenditura Quantica"],

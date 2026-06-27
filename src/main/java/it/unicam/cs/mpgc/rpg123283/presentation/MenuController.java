@@ -16,12 +16,11 @@ public class MenuController {
     @FXML private Canvas spaceCanvas;
     @FXML private javafx.scene.control.Label crystalCountLabel;
 
-    private SpaceBackgroundEngine spaceBackgroundEngine;
 
     @FXML
     public void initialize() {
         if (spaceCanvas != null && rootPane != null) {
-            this.spaceBackgroundEngine = SpaceBackgroundInitializer.setup(rootPane, spaceCanvas);
+            SpaceBackgroundInitializer.setup(rootPane, spaceCanvas);
         }
         
         GameService service = SceneManager.getInstance().getGameService();

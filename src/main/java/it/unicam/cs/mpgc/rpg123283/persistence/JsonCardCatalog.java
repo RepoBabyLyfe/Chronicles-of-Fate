@@ -22,7 +22,6 @@ public class JsonCardCatalog implements CardCatalog {
     private final List<Card> availableCards = new ArrayList<>();
 
     //DTO interno per la deserializzazione
-    @SuppressWarnings("unused")
     private static class CardDTO {
         String name;
         int manaCost;
