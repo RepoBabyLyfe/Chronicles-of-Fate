@@ -159,15 +159,21 @@ I vari Listener, come i Controller grafici, si registrano (`subscribe(this)`) al
 
 ### 3.3 Layer `presentation` (UI e Controller FXML)
 
-- **Controller: `MenuController`, `CombatController`, `ShopController`, `DeckBuilderController`, `VictoryController`**
- Questi componenti coordinano esclusivamente le schermate dell'interfaccia JavaFX. Ricevono input dai bottoni (`@FXML public void onPlayClicked()`) e chiamano i metodi del `GameService`. Se c'è da mostrare una vittoria o un HP modificato, si affidano agli eventi ricevuti dal `GameEventBus`. I Controller non comunicano mai direttamente tra di loro, parlano *solo ed esclusivamente* con `GameService` e `SceneManager`.
+**Controller: `MenuController`, `CombatController`, `ShopController`, `DeckBuilderController`, `VictoryController`**
 
-- **Classi Assistenti di UI (Animation, Rendering & UX)**
-  - **`CombatPresenter`**: Gestisce lo stato visivo dell'arena di combattimento. Aggiorna le barre della vita e gestisce le piccole animazioni di danno (shake) (tramite `TranslateTransition`) sulle barre vita quando un personaggio subisce danno.
-  - **`EnemyCardAnimator` e `DiceAnimator`**: De-clutterizzano i Controller gestendo logiche complesse legate a `FadeTransition` e `TranslateTransition`. Spostano e animano gli elementi grafici.
-  - **`UINotificationManager` e `CardZoomOverlay`**: Gestiscono la User Experience (UX) avanzata. Mostrano rispettivamente testi fluttuanti e l'ingrandimento delle carte.
-  - **`HandViewRenderer` e `ImageCache`**: Il `HandViewRenderer` contiene logica per disporre le carte a forma di ventaglio. L'`ImageCache` è il servizio che mantiene le immagini in RAM per evitare blocchi e dispongono le carte a ventaglio.
-  - **`SpaceBackgroundEngine` e `SpaceBackgroundInitializer`**: Lo `SpaceBackgroundEngine` è un motore custom altamente ottimizzato. Utilizza un `AnimationTimer` nativo JavaFX per ricalcolare, a 60 fps costanti, un sistema particellare di nebulose radiali e stelle in 3 dimensioni simulate. Le risorse, come sfumature e gradienti (`RadialGradient`), sono caricate in cache una volta sola e non nel loop, in modo da non saturare il Garbage Collector che causerebbe microscatti/lag evidenti. Lo `SpaceBackgroundInitializer` è una classe utility statica che configura il binding dimensionale del `Canvas` al `StackPane` padre, istanzia l'engine e registra il listener per il tracking del mouse.
+Questi componenti coordinano esclusivamente le schermate dell'interfaccia JavaFX. Ricevono input dai bottoni (ad esempio `@FXML public void onPlayClicked()`) e invocano i metodi del `GameService`. Quando è necessario aggiornare l'interfaccia (ad esempio mostrando una vittoria o modificando gli HP visualizzati), reagiscono agli eventi pubblicati dal `GameEventBus`. I Controller non comunicano mai direttamente tra loro, ma interagiscono esclusivamente con `GameService` e `SceneManager`.
+
+**Classi Assistenti di UI (Animation, Rendering & UX)**
+
+**`CombatPresenter`** gestisce lo stato visivo dell'arena di combattimento. Aggiorna le barre della vita e coordina le animazioni di danno (shake) mediante `TranslateTransition` quando un personaggio subisce un attacco.
+
+**`EnemyCardAnimator`** e **`DiceAnimator`** alleggeriscono i Controller incapsulando la logica relativa alle animazioni (`FadeTransition` e `TranslateTransition`), occupandosi dello spostamento e della gestione dinamica degli elementi grafici.
+
+**`UINotificationManager`** e **`CardZoomOverlay`** implementano funzionalità dedicate alla User Experience (UX), mostrando rispettivamente notifiche testuali animate e l'ingrandimento delle carte.
+
+**`HandViewRenderer`** contiene la logica necessaria per disporre le carte della mano secondo una configurazione a ventaglio. **`ImageCache`** mantiene le immagini in memoria per evitare caricamenti ripetuti e ridurre i rallentamenti durante il rendering.
+
+**`SpaceBackgroundEngine`** è un motore grafico personalizzato e ottimizzato che utilizza un `AnimationTimer` di JavaFX per aggiornare a circa 60 FPS un sistema particellare composto da nebulose radiali e stelle tridimensionali simulate. Le risorse grafiche, come `RadialGradient` e altre sfumature, vengono inizializzate una sola volta e mantenute in cache, evitando allocazioni continue che potrebbero aumentare l'attività del Garbage Collector e causare micro-scatti. **`SpaceBackgroundInitializer`** è una classe di supporto che configura il binding dimensionale del `Canvas` al relativo `StackPane`, inizializza il motore grafico e registra i listener necessari per il tracciamento del puntatore del mouse.
 
 
 ### 3.4 Layer `persistence` e `infrastructure`
