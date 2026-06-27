@@ -35,4 +35,5 @@ gradlew.bat run
 Si dichiara l'utilizzo mirato e documentato di strumenti di Intelligenza Artificiale ( LLM per il codice e motori Text-to-Image) durante l'intera realizzazione tecnica e artistica di questo progetto. 
 L'AI è stata impiegata come supporto avanzato allo sviluppo per l'ingegnerizzazione dell'architettura (Refactoring, Dependency Injection), le ottimizzazioni del rendering (risoluzione di memory leak e implementazione di Image Cache per l'eliminazione dei lag), e per la generazione di tutti gli asset grafici (illustrazioni delle carte e UI), permettendo di ottenere uno stile artistico *Cyber-SciFi* coeso e professionale senza l'ausilio di un team artistico esterno.
 
-Tutto il codice architetturale e le logiche generate sono state rigorosamente verificate e revisionate in modo da rispettare le severe norme ingegneristiche originali del progetto. I dettagli macroscopici sull'utilizzo dell'AI sono rendicontati e approfonditi in un capitolo dedicato all'interno del file **WIKI.md**.
+Il codice e le logiche generate sono stati verificati e revisionati per garantirne la coerenza con l'architettura e gli standard progettuali adottati. Maggiori dettagli sull'utilizzo dell'AI sono disponibili nel file **WIKI.md**.
+
